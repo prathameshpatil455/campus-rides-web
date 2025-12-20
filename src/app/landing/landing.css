@@ -58,6 +58,14 @@
   color: #14b8a6;
 }
 
+.dashboard-btn {
+  border-color: #14b8a6;
+  color: #14b8a6;
+  border-radius: 8px;
+  padding: 0.5rem 1.5rem;
+  font-weight: 500;
+}
+
 .get-started-btn {
   background-color: #14b8a6;
   color: white;

@@ -1,0 +1,197 @@
+<div class="auth-page">
+  <div class="auth-container">
+    <div class="auth-left">
+      <div class="branding-content">
+        <div class="logo">
+          <mat-icon class="logo-icon">directions_car</mat-icon>
+          <span class="logo-text">CampusRide</span>
+        </div>
+
+        <h1 class="headline">
+          <span class="headline-line">Share rides, save money,</span>
+          <span class="headline-line accent">connect with peers.</span>
+        </h1>
+
+        <p class="description">
+          The student-exclusive ride sharing platform for your campus. Safe, affordable, and
+          eco-friendly transportation.
+        </p>
+
+        <div class="stats">
+          <div class="stat-item">
+            <div class="stat-number">500+</div>
+            <div class="stat-label">Active Students</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">1.2k</div>
+            <div class="stat-label">Rides Shared</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">$5k</div>
+            <div class="stat-label">Saved Monthly</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-right">
+      <div class="form-card">
+        <div class="form-header">
+          <h2 class="welcome-title">Welcome</h2>
+          <p class="welcome-subtitle">Sign in or create an account.</p>
+        </div>
+
+        <div class="auth-tabs">
+          <button
+            class="tab-button"
+            [class.active]="authMode() === 'signin'"
+            (click)="setAuthMode('signin')"
+          >
+            Sign In
+          </button>
+          <button
+            class="tab-button"
+            [class.active]="authMode() === 'signup'"
+            (click)="setAuthMode('signup')"
+          >
+            Sign Up
+          </button>
+        </div>
+
+        @if (authMode() === 'signin') {
+        <form [formGroup]="signInForm" (ngSubmit)="onSignIn()" class="auth-form">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>College Email</mat-label>
+            <mat-icon matPrefix>mail</mat-icon>
+            <input matInput formControlName="email" type="email" placeholder="you@campus.edu" />
+            @if (signInForm.get('email')?.invalid && signInForm.get('email')?.touched) {
+            <mat-error>{{ getEmailErrorMessage(signInForm) }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Password</mat-label>
+            <mat-icon matPrefix>lock</mat-icon>
+            <input matInput formControlName="password" type="password" placeholder="••••••••" />
+            @if (signInForm.get('password')?.invalid && signInForm.get('password')?.touched) {
+            <mat-error>{{ getPasswordErrorMessage(signInForm) }}</mat-error>
+            }
+          </mat-form-field>
+
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            class="submit-button"
+            [disabled]="signInForm.invalid"
+          >
+            Sign In
+          </button>
+
+          <p class="disclaimer">Only students with a valid college email can join.</p>
+        </form>
+        } @if (authMode() === 'signup') {
+        <form [formGroup]="signUpForm" (ngSubmit)="onSignUp()" class="auth-form">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Full Name</mat-label>
+            <mat-icon matPrefix>person</mat-icon>
+            <input matInput formControlName="fullName" placeholder="John Doe" />
+            @if (signUpForm.get('fullName')?.invalid && signUpForm.get('fullName')?.touched) {
+            <mat-error>Full name is required</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>College Email</mat-label>
+            <mat-icon matPrefix>mail</mat-icon>
+            <input matInput formControlName="email" type="email" placeholder="you@campus.edu" />
+            @if (signUpForm.get('email')?.invalid && signUpForm.get('email')?.touched) {
+            <mat-error>{{ getEmailErrorMessage(signUpForm) }}</mat-error>
+            }
+          </mat-form-field>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Department</mat-label>
+              <mat-select formControlName="department" placeholder="Select">
+                @for (dept of departments; track dept.value) {
+                <mat-option [value]="dept.value">{{ dept.label }}</mat-option>
+                }
+              </mat-select>
+              @if ( signUpForm.get('department')?.invalid && signUpForm.get('department')?.touched )
+              {
+              <mat-error>Department is required</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Year</mat-label>
+              <mat-select formControlName="year" placeholder="Select">
+                @for (year of years; track year.value) {
+                <mat-option [value]="year.value">{{ year.label }}</mat-option>
+                }
+              </mat-select>
+              @if (signUpForm.get('year')?.invalid && signUpForm.get('year')?.touched) {
+              <mat-error>Year is required</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Student ID</mat-label>
+            <mat-icon matPrefix>badge</mat-icon>
+            <input matInput formControlName="studentId" placeholder="CS2022001" />
+            @if (signUpForm.get('studentId')?.invalid && signUpForm.get('studentId')?.touched) {
+            <mat-error>Student ID is required</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Password</mat-label>
+            <mat-icon matPrefix>lock</mat-icon>
+            <input
+              matInput
+              formControlName="password"
+              type="password"
+              placeholder="Min. 8 characters"
+            />
+            @if ( signUpForm.get('password')?.invalid && signUpForm.get('password')?.touched ) {
+            <mat-error>{{ getPasswordErrorMessage(signUpForm) }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Confirm Password</mat-label>
+            <mat-icon matPrefix>lock</mat-icon>
+            <input
+              matInput
+              formControlName="confirmPassword"
+              type="password"
+              placeholder="********"
+            />
+            @if ( signUpForm.hasError('passwordMismatch') &&
+            signUpForm.get('confirmPassword')?.touched ) {
+            <mat-error>Passwords do not match</mat-error>
+            } @if ( signUpForm.get('confirmPassword')?.hasError('required') &&
+            signUpForm.get('confirmPassword')?.touched ) {
+            <mat-error>Please confirm your password</mat-error>
+            }
+          </mat-form-field>
+
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            class="submit-button"
+            [disabled]="signUpForm.invalid"
+          >
+            Create Account
+          </button>
+
+          <p class="disclaimer">Only students with a valid college email can join.</p>
+        </form>
+        }
+      </div>
+    </div>
+  </div>
+</div>

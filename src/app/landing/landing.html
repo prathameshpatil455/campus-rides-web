@@ -6,8 +6,19 @@
         <span class="logo-text">CampusRide</span>
       </div>
       <nav class="nav">
-        <a href="#" class="nav-link">Sign In</a>
-        <button mat-raised-button color="primary" class="get-started-btn">Get Started</button>
+        <a routerLink="/auth" [queryParams]="{ mode: 'signin' }" class="nav-link">Sign In</a>
+        <button mat-stroked-button color="primary" class="dashboard-btn" routerLink="/dashboard">
+          Dashboard
+        </button>
+        <button
+          mat-raised-button
+          color="primary"
+          class="get-started-btn"
+          routerLink="/auth"
+          [queryParams]="{ mode: 'signup' }"
+        >
+          Get Started
+        </button>
       </nav>
     </div>
   </header>
@@ -27,7 +38,13 @@
         eco-friendly transportation with fellow students.
       </p>
       <div class="hero-actions">
-        <button mat-raised-button color="primary" class="primary-btn">
+        <button
+          mat-raised-button
+          color="primary"
+          class="primary-btn"
+          routerLink="/auth"
+          [queryParams]="{ mode: 'signup' }"
+        >
           Start Sharing Rides
           <mat-icon>arrow_forward</mat-icon>
         </button>
@@ -117,7 +134,12 @@
         <p class="cta-description">
           Join hundreds of students already saving money and making connections on campus.
         </p>
-        <button mat-raised-button class="cta-button">
+        <button
+          mat-raised-button
+          class="cta-button"
+          routerLink="/auth"
+          [queryParams]="{ mode: 'signup' }"
+        >
           Create Account
           <mat-icon>arrow_forward</mat-icon>
         </button>
