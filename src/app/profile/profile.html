@@ -1,0 +1,290 @@
+<div class="profile-page">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon">
+          <mat-icon>directions_car</mat-icon>
+        </div>
+        <span class="logo-text">CampusRide</span>
+        <mat-icon class="collapse-icon">chevron_left</mat-icon>
+      </div>
+    </div>
+
+    <div class="driver-mode-toggle" [class.active]="isDriverMode" (click)="toggleDriverMode()">
+      <mat-icon class="toggle-icon">local_taxi</mat-icon>
+      <span>Driver Mode</span>
+      <div class="toggle-switch" [class.active]="isDriverMode">
+        <span class="toggle-slider"></span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard" class="nav-item">
+        <mat-icon>dashboard</mat-icon>
+        <span>Dashboard</span>
+      </a>
+      <a routerLink="/post-ride" class="nav-item">
+        <mat-icon>add</mat-icon>
+        <span>Post Ride</span>
+      </a>
+      <a routerLink="/my-rides" class="nav-item">
+        <mat-icon>directions_car</mat-icon>
+        <span>My Rides</span>
+      </a>
+      <a routerLink="/history" class="nav-item">
+        <mat-icon>history</mat-icon>
+        <span>History</span>
+      </a>
+      <a routerLink="/messages" class="nav-item">
+        <mat-icon>chat_bubble_outline</mat-icon>
+        <span>Messages</span>
+      </a>
+      <a routerLink="/notifications" class="nav-item">
+        <mat-icon>notifications_outline</mat-icon>
+        <span>Notifications</span>
+      </a>
+      <a routerLink="/profile" class="nav-item active">
+        <mat-icon>person_outline</mat-icon>
+        <span>Profile</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-profile">
+        <div class="user-avatar">{{ currentUser.initials }}</div>
+        <div class="user-info">
+          <div class="user-name">{{ currentUser.name }}</div>
+          <div class="user-department">{{ currentUser.department }}</div>
+        </div>
+        <mat-icon class="logout-icon">chevron_right</mat-icon>
+      </div>
+    </div>
+  </aside>
+
+  <main class="profile-content">
+    <div class="content-wrapper">
+      <header class="profile-header">
+        <div>
+          <h1 class="page-title">Profile</h1>
+          <p class="page-subtitle">Manage your account settings and preferences</p>
+        </div>
+      </header>
+
+      <div class="profile-summary-card">
+        <div class="profile-avatar-container">
+          <div class="profile-avatar-large">{{ currentUser.initials }}</div>
+          <button class="avatar-edit-btn">
+            <mat-icon>camera_alt</mat-icon>
+          </button>
+        </div>
+        <div class="profile-summary-info">
+          <div class="profile-name-section">
+            <h2 class="profile-name">{{ currentUser.name }}</h2>
+            @if (currentUser.isDriver) {
+            <span class="badge driver-badge">Driver</span>
+            }
+            @if (currentUser.isVerified) {
+            <span class="badge verified-badge">
+              <mat-icon>check_circle</mat-icon>
+              Verified
+            </span>
+            }
+          </div>
+          <p class="profile-email">{{ currentUser.email }}</p>
+          <div class="profile-rating">
+            <mat-icon class="star-icon">star</mat-icon>
+            <span class="rating-value">{{ currentUser.rating }}</span>
+            <span class="rating-text">{{ currentUser.ridesCompleted }} rides completed</span>
+          </div>
+        </div>
+        <button mat-stroked-button class="edit-profile-btn" (click)="editProfile()">
+          <mat-icon>edit</mat-icon>
+          Edit Profile
+        </button>
+      </div>
+
+      <div class="info-cards-grid">
+        <div class="info-card">
+          <div class="card-header">
+            <mat-icon>person</mat-icon>
+            <h3 class="card-title">Personal Information</h3>
+          </div>
+          <div class="card-content">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Full Name</mat-label>
+              <input matInput [value]="personalInfo.fullName" readonly />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email</mat-label>
+              <input matInput [value]="personalInfo.email" readonly />
+              <mat-hint>Email cannot be changed</mat-hint>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Phone Number</mat-label>
+              <input matInput [value]="personalInfo.phone" readonly />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="card-header">
+            <mat-icon>school</mat-icon>
+            <h3 class="card-title">Academic Information</h3>
+          </div>
+          <div class="card-content">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Department</mat-label>
+              <input matInput [value]="academicInfo.department" readonly />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Year</mat-label>
+              <input matInput [value]="academicInfo.year" readonly />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Student ID</mat-label>
+              <input matInput [value]="academicInfo.studentId" readonly />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="card-header">
+            <mat-icon>directions_car</mat-icon>
+            <h3 class="card-title">Vehicle Information</h3>
+          </div>
+          <div class="card-content">
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Make</mat-label>
+                <input matInput [value]="vehicleInfo.make" readonly />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Model</mat-label>
+                <input matInput [value]="vehicleInfo.model" readonly />
+              </mat-form-field>
+            </div>
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Color</mat-label>
+                <input matInput [value]="vehicleInfo.color" readonly />
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Plate Number</mat-label>
+                <input matInput [value]="vehicleInfo.plateNumber" readonly />
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="card-header">
+            <mat-icon>local_phone</mat-icon>
+            <h3 class="card-title">Emergency Contact</h3>
+          </div>
+          <div class="card-content">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Emergency Contact Number</mat-label>
+              <input matInput [value]="emergencyContact.phone" readonly />
+            </mat-form-field>
+            <p class="emergency-contact-hint">This person will be notified in case of emergencies.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="safety-verification-section">
+        <div class="section-card">
+          <div class="card-header">
+            <mat-icon>verified_user</mat-icon>
+            <h3 class="card-title">Safety Verification</h3>
+          </div>
+          <div class="verification-progress">
+            <div class="progress-header">
+              <span class="progress-label">Verification Progress</span>
+              <span class="progress-count">{{ verifiedCount }}/{{ totalVerifications }} verified</span>
+            </div>
+            <mat-progress-bar mode="determinate" [value]="verificationProgress"></mat-progress-bar>
+            <p class="verification-instruction">
+              Complete all verifications to earn the "Trusted Student" badge
+            </p>
+          </div>
+
+          <div class="verification-items">
+            @for (item of verificationItems; track item.id) {
+            <div class="verification-item">
+              <div class="verification-icon-container" [class.verified]="item.status === 'verified'"
+                [class.pending]="item.status === 'pending'" [class.not-uploaded]="item.status === 'not_uploaded'">
+                @if (item.status === 'verified') {
+                <mat-icon class="verification-icon">check_circle</mat-icon>
+                } @else if (item.status === 'pending') {
+                <mat-icon class="verification-icon">schedule</mat-icon>
+                } @else {
+                <mat-icon class="verification-icon">warning</mat-icon>
+                }
+              </div>
+              <div class="verification-content">
+                <div class="verification-header">
+                  <h4 class="verification-title">{{ item.title }}</h4>
+                  @if (item.status === 'verified') {
+                  <span class="verification-badge verified">Verified</span>
+                  } @else if (item.status === 'pending') {
+                  <span class="verification-badge pending">Pending Review</span>
+                  } @else {
+                  <span class="verification-badge not-uploaded">Not Uploaded</span>
+                  }
+                </div>
+                <p class="verification-description">{{ item.description }}</p>
+                @if (item.uploadedDate) {
+                <p class="verification-date">Uploaded: {{ item.uploadedDate }}</p>
+                }
+              </div>
+              @if (item.status === 'not_uploaded') {
+              <button mat-stroked-button class="upload-btn" (click)="uploadDocument(item.id)">
+                <mat-icon>cloud_upload</mat-icon>
+                Upload
+              </button>
+              }
+            </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="verification-info-section">
+        <div class="info-box">
+          <mat-icon class="info-icon">shield</mat-icon>
+          <div>
+            <h4 class="info-title">Why Verification Matters</h4>
+            <ul class="info-list">
+              <li>Verified users are 3x more likely to get ride requests</li>
+              <li>Builds trust within the campus community</li>
+              <li>Ensures a safe environment for all students</li>
+              <li>Required for posting rides as a driver</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="notification-preferences-section">
+        <div class="section-card">
+          <div class="card-header">
+            <mat-icon>notifications</mat-icon>
+            <h3 class="card-title">Notification Preferences</h3>
+          </div>
+          <div class="notification-list">
+            @for (preference of notificationPreferences; track preference.id) {
+            <div class="notification-item">
+              <div class="notification-info">
+                <h4 class="notification-label">{{ preference.label }}</h4>
+                <p class="notification-description">{{ preference.description }}</p>
+              </div>
+              <mat-slide-toggle [checked]="preference.enabled" (toggleChange)="toggleNotification(preference)">
+              </mat-slide-toggle>
+            </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+

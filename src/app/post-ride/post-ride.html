@@ -1,0 +1,212 @@
+<div class="post-ride-page">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon">
+          <mat-icon>directions_car</mat-icon>
+        </div>
+        <span class="logo-text">CampusRide</span>
+        <mat-icon class="collapse-icon">chevron_left</mat-icon>
+      </div>
+    </div>
+
+    <div class="driver-mode-toggle" [class.active]="isDriverMode" (click)="toggleDriverMode()">
+      <mat-icon class="toggle-icon">local_taxi</mat-icon>
+      <span>Driver Mode</span>
+      <div class="toggle-switch" [class.active]="isDriverMode">
+        <span class="toggle-slider"></span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard" class="nav-item">
+        <mat-icon>dashboard</mat-icon>
+        <span>Dashboard</span>
+      </a>
+      <a routerLink="/post-ride" class="nav-item active">
+        <mat-icon>add</mat-icon>
+        <span>Post Ride</span>
+      </a>
+      <a routerLink="/my-rides" class="nav-item">
+        <mat-icon>directions_car</mat-icon>
+        <span>My Rides</span>
+      </a>
+      <a routerLink="/history" class="nav-item">
+        <mat-icon>history</mat-icon>
+        <span>History</span>
+      </a>
+      <a routerLink="/messages" class="nav-item">
+        <mat-icon>chat_bubble_outline</mat-icon>
+        <span>Messages</span>
+      </a>
+      <a routerLink="/notifications" class="nav-item">
+        <mat-icon>notifications_outline</mat-icon>
+        <span>Notifications</span>
+      </a>
+      <a routerLink="/profile" class="nav-item">
+        <mat-icon>person_outline</mat-icon>
+        <span>Profile</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-profile">
+        <div class="user-avatar">{{ currentUser.initials }}</div>
+        <div class="user-info">
+          <div class="user-name">{{ currentUser.name }}</div>
+          <div class="user-department">{{ currentUser.department }}</div>
+        </div>
+        <mat-icon class="logout-icon">chevron_right</mat-icon>
+      </div>
+    </div>
+  </aside>
+
+  <main class="post-ride-content">
+    <div class="content-wrapper">
+      <header class="page-header">
+        <h1 class="page-title">Post a Ride</h1>
+        <p class="page-subtitle">Share your ride and help fellow students get around campus</p>
+      </header>
+
+      <form [formGroup]="postRideForm" (ngSubmit)="onSubmit($event)" class="post-ride-form">
+        <div class="form-section-card">
+          <div class="card-header">
+            <mat-icon>place</mat-icon>
+            <h3 class="card-title">Route Details</h3>
+          </div>
+          <div class="card-content">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Pickup Point *</mat-label>
+              <mat-select formControlName="pickupPoint" placeholder="Select pickup location">
+                @for (location of pickupLocations; track location.value) {
+                <mat-option [value]="location.value">{{ location.label }}</mat-option>
+                }
+              </mat-select>
+              @if (postRideForm.get('pickupPoint')?.invalid &&
+              postRideForm.get('pickupPoint')?.touched) {
+              <mat-error>Pickup point is required</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Destination *</mat-label>
+              <mat-select formControlName="destination" placeholder="Select destination">
+                @for (dest of destinations; track dest.value) {
+                <mat-option [value]="dest.value">{{ dest.label }}</mat-option>
+                }
+              </mat-select>
+              @if (postRideForm.get('destination')?.invalid &&
+              postRideForm.get('destination')?.touched) {
+              <mat-error>Destination is required</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Department Block (Optional)</mat-label>
+              <mat-select formControlName="departmentBlock" placeholder="Select department block">
+                @for (dept of departmentBlocks; track dept.value) {
+                <mat-option [value]="dept.value">{{ dept.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-section-card">
+          <div class="card-header">
+            <mat-icon>event</mat-icon>
+            <h3 class="card-title">Schedule</h3>
+          </div>
+          <div class="card-content">
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Date *</mat-label>
+                <input matInput formControlName="date" placeholder="dd-mm-yyyy" type="date" />
+                <mat-icon matSuffix>calendar_today</mat-icon>
+                @if (postRideForm.get('date')?.invalid && postRideForm.get('date')?.touched) {
+                <mat-error>Date is required</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Departure Time *</mat-label>
+                <input matInput formControlName="departureTime" placeholder="--:--" type="time" />
+                <mat-icon matSuffix>access_time</mat-icon>
+                @if (postRideForm.get('departureTime')?.invalid &&
+                postRideForm.get('departureTime')?.touched) {
+                <mat-error>Departure time is required</mat-error>
+                }
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section-card">
+          <div class="card-header">
+            <mat-icon>people</mat-icon>
+            <h3 class="card-title">Seats & Pricing</h3>
+          </div>
+          <div class="card-content">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Available Seats *</mat-label>
+              <mat-select formControlName="availableSeats" placeholder="Select seats">
+                @for (seat of availableSeats; track seat.value) {
+                <mat-option [value]="seat.value">{{ seat.label }}</mat-option>
+                }
+              </mat-select>
+              @if (postRideForm.get('availableSeats')?.invalid &&
+              postRideForm.get('availableSeats')?.touched) {
+              <mat-error>Available seats is required</mat-error>
+              }
+            </mat-form-field>
+
+            <div class="free-ride-section">
+              <div class="free-ride-info">
+                <mat-icon class="free-ride-icon">attach_money</mat-icon>
+                <div>
+                  <h4 class="free-ride-title">Free Ride</h4>
+                  <p class="free-ride-description">Offer this ride for free</p>
+                </div>
+              </div>
+              <mat-slide-toggle formControlName="isFreeRide" color="primary"></mat-slide-toggle>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section-card">
+          <div class="card-header">
+            <mat-icon>info</mat-icon>
+            <h3 class="card-title">Additional Information</h3>
+          </div>
+          <div class="card-content">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Notes (Optional)</mat-label>
+              <textarea
+                matInput
+                formControlName="notes"
+                placeholder="Any additional details about the ride (e.g., meeting point specifics, luggage space, etc.)"
+                rows="4"
+              ></textarea>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button mat-stroked-button type="button" class="cancel-btn" (click)="onCancel()">
+            Cancel
+          </button>
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            class="submit-btn"
+            [disabled]="postRideForm.invalid"
+          >
+            <mat-icon>directions_car</mat-icon>
+            Post Ride →
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
