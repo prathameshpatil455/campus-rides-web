@@ -188,6 +188,33 @@
             Create Account
           </button>
 
+          <button
+            mat-stroked-button
+            color="accent"
+            type="button"
+            class="submit-button test-button"
+            (click)="onTestRegister()"
+            [disabled]="registerMutation.isPending()"
+          >
+            @if (registerMutation.isPending()) {
+              Testing Registration...
+            } @else {
+              🧪 Test Register API
+            }
+          </button>
+
+          @if (registerMutation.isError()) {
+            <div class="error-message">
+              Error: {{ getErrorMessage(registerMutation.error()) }}
+            </div>
+          }
+
+          @if (registerMutation.isSuccess()) {
+            <div class="success-message">
+              ✅ Registration successful! Redirecting...
+            </div>
+          }
+
           <p class="disclaimer">Only students with a valid college email can join.</p>
         </form>
         }

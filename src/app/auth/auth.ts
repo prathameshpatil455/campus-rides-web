@@ -7,6 +7,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
+import { useRegister } from '../services/auth/register';
+import { getErrorMessage } from '../utils/error-handler';
 
 type AuthMode = 'signin' | 'signup';
 
@@ -29,6 +31,8 @@ export class Auth {
   authMode = signal<AuthMode>('signin');
   signInForm: FormGroup;
   signUpForm: FormGroup;
+  registerMutation = useRegister();
+  getErrorMessage = getErrorMessage;
 
   departments = [
     { value: 'cs', label: 'Computer Science' },
@@ -99,6 +103,32 @@ export class Auth {
     if (this.signUpForm.valid) {
       console.log('Sign Up:', this.signUpForm.value);
     }
+  }
+
+  onTestRegister() {
+    const testData = {
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john.dev@rvce.edu.in',
+      studentIdNumber: 'RVCE2024001',
+      department: 'Computer Science',
+      year: '3rd',
+      password: 'password123',
+      role: 'passenger',
+    };
+
+    this.registerMutation.mutate(testData, {
+      onSuccess: (response) => {
+        console.log('Registration successful:', response);
+        if (response?.token) {
+          localStorage.setItem('token', response.token);
+          this.router.navigate(['/dashboard']);
+        }
+      },
+      onError: (error) => {
+        console.error('Registration failed:', error);
+      },
+    });
   }
 
   getEmailErrorMessage(form: FormGroup) {
