@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { useRegister } from '../services/auth/register';
+import { useLogin } from '../services/auth/login';
 import { getErrorMessage } from '../utils/error-handler';
 
 type AuthMode = 'signin' | 'signup';
@@ -32,6 +33,7 @@ export class Auth {
   signInForm: FormGroup;
   signUpForm: FormGroup;
   registerMutation = useRegister();
+  loginMutation = useLogin();
   getErrorMessage = getErrorMessage;
 
   departments = [
@@ -105,11 +107,31 @@ export class Auth {
     }
   }
 
+  onTestLogin() {
+    const testData = {
+      email: 'john.dev@rvce.edu.in',
+      password: 'password123',
+    };
+
+    this.loginMutation.mutate(testData, {
+      onSuccess: (response) => {
+        console.log('Login successful:', response);
+        if (response?.token) {
+          localStorage.setItem('token', response.token);
+          this.router.navigate(['/dashboard']);
+        }
+      },
+      onError: (error) => {
+        console.error('Login failed:', error);
+      },
+    });
+  }
+
   onTestRegister() {
     const testData = {
       firstName: 'John',
       lastName: 'Doe',
-      email: 'john.dev@rvce.edu.in',
+      email: 'john.doe@rvce.edu.in',
       studentIdNumber: 'RVCE2024001',
       department: 'Computer Science',
       year: '3rd',

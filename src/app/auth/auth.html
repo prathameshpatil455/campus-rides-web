@@ -88,6 +88,33 @@
             Sign In
           </button>
 
+          <button
+            mat-stroked-button
+            color="accent"
+            type="button"
+            class="submit-button test-button"
+            (click)="onTestLogin()"
+            [disabled]="loginMutation.isPending()"
+          >
+            @if (loginMutation.isPending()) {
+              Testing Login...
+            } @else {
+              🧪 Test Login API
+            }
+          </button>
+
+          @if (loginMutation.isError()) {
+            <div class="error-message">
+              Error: {{ getErrorMessage(loginMutation.error()) }}
+            </div>
+          }
+
+          @if (loginMutation.isSuccess()) {
+            <div class="success-message">
+              ✅ Login successful! Redirecting...
+            </div>
+          }
+
           <p class="disclaimer">Only students with a valid college email can join.</p>
         </form>
         } @if (authMode() === 'signup') {
