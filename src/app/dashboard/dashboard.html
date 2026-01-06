@@ -56,7 +56,7 @@
           <div class="user-name">{{ currentUser.name }}</div>
           <div class="user-department">{{ currentUser.department }}</div>
         </div>
-        <mat-icon class="logout-icon">logout</mat-icon>
+        <mat-icon class="logout-icon" (click)="logout()">logout</mat-icon>
       </div>
     </div>
   </aside>
@@ -64,7 +64,7 @@
   <main class="dashboard-content">
     <div class="content-wrapper">
       <header class="welcome-section">
-        <h1 class="welcome-title">Welcome back, Alex! 👋</h1>
+        <h1 class="welcome-title">Welcome back, {{ getFirstName() }}! 👋</h1>
         <p class="welcome-subtitle">
           Manage your rides and help fellow students get around campus.
         </p>

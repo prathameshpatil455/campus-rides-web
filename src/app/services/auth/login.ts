@@ -9,14 +9,7 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   token: string;
-  user: {
-    id: string;
-    fullName: string;
-    email: string;
-    department: string;
-    year: string;
-    studentId: string;
-  };
+  userId: string;
 }
 
 export const useLogin = () => {
@@ -29,4 +22,3 @@ export const useLogin = () => {
     },
   }));
 };
-

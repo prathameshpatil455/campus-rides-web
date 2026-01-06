@@ -1,10 +1,11 @@
 import { inject } from '@angular/core';
 import { injectMutation, QueryClient } from '@tanstack/angular-query-experimental';
 import { ApiService } from '../api';
-import { User } from './get-current-user';
+import { User } from '../../types/user.types';
 
 export interface UpdateUserRequest {
-  fullName?: string;
+  firstName?: string;
+  lastName?: string;
   email?: string;
   phone?: string;
 }
@@ -23,4 +24,3 @@ export const useUpdateUser = () => {
     },
   }));
 };
-

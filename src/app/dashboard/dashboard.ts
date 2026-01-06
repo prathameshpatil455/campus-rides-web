@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { AuthService } from '../services/auth/auth.service';
+import { getInitials, getFullName, getFirstName } from '../utils/name.utils';
 
 interface StatCard {
   title: string;
@@ -47,13 +49,32 @@ interface UserStat {
   styleUrl: './dashboard.css',
 })
 export class Dashboard {
+  private authService = inject(AuthService);
+  private router = inject(Router);
   isDriverMode = true;
 
-  currentUser = {
-    name: 'Alex Johnson',
-    initials: 'AJ',
-    department: 'Computer Science',
-  };
+  constructor() {
+    const token = this.authService.getToken();
+    const userId = this.authService.getUserId();
+    const userData = this.authService.getUserData();
+    console.log('Dashboard - Token:', token);
+    console.log('Dashboard - UserID:', userId);
+    console.log('Dashboard - UserData:', userData);
+  }
+
+  get currentUser() {
+    const user = this.authService.getUserData();
+    return {
+      name: getFullName(user?.firstName, user?.lastName),
+      initials: getInitials(user?.firstName, user?.lastName),
+      department: user?.department || 'N/A',
+    };
+  }
+
+  getFirstName(): string {
+    const user = this.authService.getUserData();
+    return getFirstName(user?.firstName);
+  }
 
   statCards: StatCard[] = [
     {
@@ -128,5 +149,10 @@ export class Dashboard {
 
   declineRequest(request: BookingRequest) {
     console.log('Decline request:', request);
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/auth']);
   }
 }

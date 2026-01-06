@@ -1,12 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { AuthService } from '../services/auth/auth.service';
 
 interface VerificationItem {
   id: string;
@@ -41,6 +42,8 @@ interface NotificationPreference {
   styleUrl: './profile.css',
 })
 export class Profile {
+  private authService = inject(AuthService);
+  private router = inject(Router);
   isDriverMode = true;
 
   currentUser = {
@@ -165,5 +168,9 @@ export class Profile {
   editProfile() {
     console.log('Edit profile');
   }
-}
 
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/auth']);
+  }
+}

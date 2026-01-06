@@ -3,14 +3,18 @@ import { injectQuery } from '@tanstack/angular-query-experimental';
 import { ApiService } from '../api';
 import { User } from '../../types/user.types';
 
-export const useGetCurrentUser = () => {
+export const useGetUserById = (userId: string | null) => {
   const apiService = inject(ApiService);
 
   return injectQuery(() => ({
-    queryKey: ['user', 'current'],
+    queryKey: ['user', userId],
     queryFn: async () => {
-      const response = await apiService.get<User>('/users/me').toPromise();
+      if (!userId) {
+        throw new Error('User ID is required');
+      }
+      const response = await apiService.get<User>(`/user/${userId}`).toPromise();
       return response?.data;
     },
+    enabled: !!userId,
   }));
 };
