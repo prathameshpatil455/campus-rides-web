@@ -393,3 +393,30 @@
     padding: 1.25rem;
   }
 }
+
+::ng-deep .mat-mdc-form-field-required-marker {
+  color: #ef4444 !important;
+}
+
+::ng-deep .success-toast {
+  background-color: #10b981 !important;
+  color: white !important;
+}
+
+::ng-deep .success-toast .mdc-snackbar__label {
+  color: white !important;
+}
+
+::ng-deep .error-toast {
+  background-color: #ef4444 !important;
+  color: white !important;
+}
+
+::ng-deep .error-toast .mdc-snackbar__label {
+  color: white !important;
+}
+
+::ng-deep .mat-mdc-snack-bar-container {
+  margin-top: 1rem !important;
+  margin-right: 1rem !important;
+}

@@ -1,4 +1,4 @@
 export const environment = {
-  apiBaseUrl: 'http://localhost:3000/api',
+  apiBaseUrl: 'https://campus-rides-service.onrender.com/api',
   production: true,
 };

@@ -13,17 +13,7 @@ export interface RegisterRequest {
   role: string;
 }
 
-export interface RegisterResponse {
-  token: string;
-  user: {
-    id: string;
-    fullName: string;
-    email: string;
-    department: string;
-    year: string;
-    studentId: string;
-  };
-}
+export interface RegisterResponse {}
 
 export const useRegister = () => {
   const apiService = inject(ApiService);
@@ -31,8 +21,7 @@ export const useRegister = () => {
   return injectMutation(() => ({
     mutationFn: async (data: RegisterRequest) => {
       const response = await apiService.post<RegisterResponse>('/auth/register', data).toPromise();
-      return response?.data;
+      return response;
     },
   }));
 };
-
