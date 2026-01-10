@@ -1,10 +1,11 @@
-import { Component, inject, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { Component, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { RouterModule, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { useGetRides, Ride as BackendRide } from '../services/rides/get-rides';
 import { AuthService } from '../services/auth/auth.service';
-import { getInitials, getFullName, getFirstName } from '../utils/name.utils';
+import { inject } from '@angular/core';
 
 interface StatCard {
   title: string;
@@ -34,6 +35,7 @@ interface BookingRequest {
   seats: number;
   status: 'pending' | 'accepted' | 'declined';
   route: string;
+  // ... (other properties if any)
 }
 
 interface UserStat {
@@ -49,79 +51,101 @@ interface UserStat {
   styleUrl: './dashboard.css',
 })
 export class Dashboard {
-  private authService = inject(AuthService);
-  private router = inject(Router);
   isDriverMode = true;
+  ridesQuery = useGetRides();
 
-  constructor() {
-    const token = this.authService.getToken();
-    const userId = this.authService.getUserId();
-    const userData = this.authService.getUserData();
-    console.log('Dashboard - Token:', token);
-    console.log('Dashboard - UserID:', userId);
-    console.log('Dashboard - UserData:', userData);
-  }
+  private authService = inject(AuthService);
+  private platformId = inject(PLATFORM_ID);
+  private router = inject(Router);
 
   get currentUser() {
     const user = this.authService.getUserData();
+    if (!user) {
+      return {
+        fullName: 'Guest User',
+        initials: 'GU',
+        department: '',
+        id: ''
+      };
+    }
     return {
-      name: getFullName(user?.firstName, user?.lastName),
-      initials: getInitials(user?.firstName, user?.lastName),
-      department: user?.department || 'N/A',
+      fullName: `${user.firstName} ${user.lastName}`,
+      initials: (user.firstName[0] + user.lastName[0]).toUpperCase(),
+      department: user.department,
+      id: user._id
     };
   }
 
-  getFirstName(): string {
-    const user = this.authService.getUserData();
-    return getFirstName(user?.firstName);
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/auth']);
   }
 
-  statCards: StatCard[] = [
-    {
-      title: 'Active Rides',
-      value: '1',
-      subtitle: 'Currently scheduled',
-      icon: 'directions_car',
-      variant: 'primary',
-    },
-    {
-      title: 'Total Rides',
-      value: '47',
-      subtitle: 'Rides offered',
-      icon: 'show_chart',
-      variant: 'default',
-      trend: '↑12% vs last week',
-    },
-    {
-      title: 'Rating',
-      value: '4.8',
-      subtitle: 'Out of 5.0',
-      icon: 'people',
-      variant: 'default',
-    },
-    {
-      title: 'Pending Requests',
-      value: '1',
-      subtitle: 'Awaiting response',
-      icon: 'schedule',
-      variant: 'warning',
-    },
-  ];
+  get activeRides(): ActiveRide[] {
+    const rides = this.ridesQuery.data();
+    const user = this.currentUser;
+    if (!rides || !user.id) return [];
 
-  activeRides: ActiveRide[] = [
-    {
-      driverName: 'Alex Johnson',
-      driverInitials: 'AJ',
-      rating: 4.8,
-      totalRides: 47,
-      pickup: 'Hostel A',
-      destination: 'Computer Science Block',
-      date: 'Mon, Dec 2',
-      time: '09:00',
-      seats: '1/4 seats',
-      status: 'free',
-    },
-  ];
+    return rides
+      .filter(ride => ride.driverId === user.id)
+      .map(ride => {
+        // Helper to Format Location
+        const formatLocation = (loc: any) => {
+          if (!loc) return 'Unknown';
+          if (loc.address) return loc.address;
+          if (loc.coordinates) return `${loc.coordinates.lat.toFixed(4)}, ${loc.coordinates.lng.toFixed(4)}`;
+          return 'Pinned Location';
+        };
+
+        return {
+          driverName: ride.driverName || 'Unknown Driver',
+          driverInitials: ride.driverName ? ride.driverName.substring(0, 2).toUpperCase() : 'UD',
+          rating: 5.0, // Mock data
+          totalRides: 10, // Mock data
+          pickup: formatLocation(ride.from),
+          destination: formatLocation(ride.to),
+          date: new Date(ride.date).toLocaleDateString(), // Format date
+          time: ride.time,
+          seats: `${ride.availableSeats}/${ride.totalSeats} seats`,
+          status: ride.price === 0 ? 'free' : 'paid'
+        };
+      });
+  }
+
+  get statCards(): StatCard[] {
+    const ridesCount = this.activeRides.length;
+    return [
+      {
+        title: 'Active Rides',
+        value: ridesCount.toString(),
+        subtitle: 'Currently scheduled',
+        icon: 'directions_car',
+        variant: 'primary',
+      },
+      {
+        title: 'Total Rides',
+        value: '47',
+        subtitle: 'Rides offered',
+        icon: 'show_chart',
+        variant: 'default',
+        trend: '↑12% vs last week',
+      },
+      {
+        title: 'Rating',
+        value: '4.8',
+        subtitle: 'Out of 5.0',
+        icon: 'people',
+        variant: 'default',
+      },
+      {
+        title: 'Pending Requests',
+        value: '1',
+        subtitle: 'Awaiting response',
+        icon: 'schedule',
+        variant: 'warning',
+      },
+    ];
+  }
 
   bookingRequests: BookingRequest[] = [
     {
@@ -149,10 +173,5 @@ export class Dashboard {
 
   declineRequest(request: BookingRequest) {
     console.log('Decline request:', request);
-  }
-
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/auth']);
   }
 }

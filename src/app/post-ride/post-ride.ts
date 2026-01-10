@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -8,6 +8,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { LocationSelector } from '../components/location-selector/location-selector';
+import { Location } from '../types/location';
+import { useCreateRide } from '../services/rides/create-ride';
+import { AuthService } from '../services/auth/auth.service';
+import { getErrorMessage } from '../utils/error-handler';
 
 @Component({
   selector: 'app-post-ride',
@@ -22,29 +30,36 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     MatInputModule,
     MatSelectModule,
     MatSlideToggleModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatSnackBarModule,
+    LocationSelector,
   ],
   templateUrl: './post-ride.html',
   styleUrl: './post-ride.css',
 })
 export class PostRide {
+  private authService = inject(AuthService);
+  private snackBar = inject(MatSnackBar);
   isDriverMode = true;
 
-  currentUser = {
-    name: 'Alex Johnson',
-    initials: 'AJ',
-    department: 'Computer Science',
-  };
+  get currentUser() {
+    const user = this.authService.getUserData();
+    if (!user) {
+      return {
+        name: 'Guest User',
+        initials: 'GU',
+        department: '',
+      };
+    }
+    return {
+      name: `${user.firstName} ${user.lastName}`,
+      initials: (user.firstName[0] + user.lastName[0]).toUpperCase(),
+      department: user.department,
+    };
+  }
 
   postRideForm: FormGroup;
-
-  pickupLocations = [
-    { value: 'hostel-a', label: 'Hostel A' },
-    { value: 'hostel-b', label: 'Hostel B' },
-    { value: 'hostel-c', label: 'Hostel C' },
-    { value: 'main-gate', label: 'Main Gate' },
-    { value: 'library', label: 'Library' },
-    { value: 'canteen', label: 'Canteen' },
-  ];
 
   destinations = [
     { value: 'cs-block', label: 'Computer Science Block' },
@@ -57,15 +72,6 @@ export class PostRide {
     { value: 'library', label: 'Library' },
   ];
 
-  departmentBlocks = [
-    { value: 'cs', label: 'Computer Science' },
-    { value: 'ee', label: 'Electrical Engineering' },
-    { value: 'me', label: 'Mechanical Engineering' },
-    { value: 'ce', label: 'Civil Engineering' },
-    { value: 'it', label: 'Information Technology' },
-    { value: 'ece', label: 'Electronics & Communication' },
-  ];
-
   availableSeats = [
     { value: '1', label: '1 seat' },
     { value: '2', label: '2 seats' },
@@ -75,9 +81,9 @@ export class PostRide {
 
   constructor(private fb: FormBuilder, private router: Router) {
     this.postRideForm = this.fb.group({
-      pickupPoint: ['', [Validators.required]],
-      destination: ['', [Validators.required]],
-      departmentBlock: [''],
+      from: [null, [Validators.required]],
+      to: [null, [Validators.required]],
+
       date: ['', [Validators.required]],
       departureTime: ['', [Validators.required]],
       availableSeats: ['', [Validators.required]],
@@ -99,11 +105,48 @@ export class PostRide {
     this.router.navigate(['/dashboard']);
   }
 
+  onLocationChange(field: string, location: Location) {
+    this.postRideForm.patchValue({ [field]: location });
+  }
+
+  createRideMutation = useCreateRide();
+
   onSubmit(event: Event) {
     event.preventDefault();
     if (this.postRideForm.valid) {
-      console.log('Post ride form data:', this.postRideForm.value);
+      const formValue = this.postRideForm.value;
+      
+      const rideData = {
+        from: formValue.from,
+        to: formValue.to,
+        date: formValue.date ? new Date(formValue.date).toISOString() : '', 
+        time: formValue.departureTime,
+        totalSeats: parseInt(formValue.availableSeats),
+        price: formValue.isFreeRide ? 0 : 50 
+      };
+
+      console.log('Submitting ride data:', rideData);
+
+      this.createRideMutation.mutate(rideData, {
+        onSuccess: () => {
+          this.snackBar.open('Ride posted successfully!', 'Close', {
+            duration: 3000,
+            horizontalPosition: 'right',
+            verticalPosition: 'top',
+          });
+          this.router.navigate(['/my-rides']);
+        },
+        onError: (error) => {
+          console.error('Failed to create ride', error);
+          this.snackBar.open(getErrorMessage(error), 'Close', {
+            duration: 5000,
+            horizontalPosition: 'right',
+            verticalPosition: 'top',
+          });
+        }
+      });
     } else {
+      console.warn('Post Ride Form is invalid:', this.postRideForm.controls);
       this.postRideForm.markAllAsTouched();
     }
   }

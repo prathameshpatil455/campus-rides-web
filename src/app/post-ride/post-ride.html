@@ -75,40 +75,19 @@
             <h3 class="card-title">Route Details</h3>
           </div>
           <div class="card-content">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Pickup Point *</mat-label>
-              <mat-select formControlName="pickupPoint" placeholder="Select pickup location">
-                @for (location of pickupLocations; track location.value) {
-                <mat-option [value]="location.value">{{ location.label }}</mat-option>
-                }
-              </mat-select>
-              @if (postRideForm.get('pickupPoint')?.invalid &&
-              postRideForm.get('pickupPoint')?.touched) {
-              <mat-error>Pickup point is required</mat-error>
+            <div class="location-group">
+              <app-location-selector label="Pickup Location" (locationChange)="onLocationChange('from', $event)"></app-location-selector>
+              @if (postRideForm.get('from')?.invalid && postRideForm.get('from')?.touched) {
+                <mat-error>Pickup location is required</mat-error>
               }
-            </mat-form-field>
+            </div>
 
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Destination *</mat-label>
-              <mat-select formControlName="destination" placeholder="Select destination">
-                @for (dest of destinations; track dest.value) {
-                <mat-option [value]="dest.value">{{ dest.label }}</mat-option>
-                }
-              </mat-select>
-              @if (postRideForm.get('destination')?.invalid &&
-              postRideForm.get('destination')?.touched) {
-              <mat-error>Destination is required</mat-error>
+            <div class="location-group">
+              <app-location-selector label="Destination" (locationChange)="onLocationChange('to', $event)"></app-location-selector>
+              @if (postRideForm.get('to')?.invalid && postRideForm.get('to')?.touched) {
+                <mat-error>Destination is required</mat-error>
               }
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Department Block (Optional)</mat-label>
-              <mat-select formControlName="departmentBlock" placeholder="Select department block">
-                @for (dept of departmentBlocks; track dept.value) {
-                <mat-option [value]="dept.value">{{ dept.label }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
+            </div>
           </div>
         </div>
 
@@ -121,8 +100,9 @@
             <div class="form-row">
               <mat-form-field appearance="outline" class="half-width">
                 <mat-label>Date *</mat-label>
-                <input matInput formControlName="date" placeholder="dd-mm-yyyy" type="date" />
-                <mat-icon matSuffix>calendar_today</mat-icon>
+                <input matInput [matDatepicker]="picker" formControlName="date" placeholder="dd-mm-yyyy" />
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
                 @if (postRideForm.get('date')?.invalid && postRideForm.get('date')?.touched) {
                 <mat-error>Date is required</mat-error>
                 }
@@ -130,8 +110,8 @@
 
               <mat-form-field appearance="outline" class="half-width">
                 <mat-label>Departure Time *</mat-label>
-                <input matInput formControlName="departureTime" placeholder="--:--" type="time" />
-                <mat-icon matSuffix>access_time</mat-icon>
+                <input matInput #timePicker formControlName="departureTime" placeholder="--:--" type="time" />
+                <mat-icon matSuffix (click)="timePicker.showPicker()" style="cursor: pointer">schedule</mat-icon>
                 @if (postRideForm.get('departureTime')?.invalid &&
                 postRideForm.get('departureTime')?.touched) {
                 <mat-error>Departure time is required</mat-error>

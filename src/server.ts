@@ -10,19 +10,61 @@ import { join } from 'node:path';
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
 const app = express();
+app.use(express.json()); // Parse JSON bodies
+
 const angularApp = new AngularNodeAppEngine();
 
 /**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/{*splat}', (req, res) => {
- *   // Handle API request
- * });
- * ```
+ * Mock Database
  */
+interface MockRide {
+  id: string;
+  from: any;
+  to: any;
+  date: string;
+  time: string;
+  availableSeats: number;
+  totalSeats: number;
+  price: number;
+  status: string;
+  driverId: string;
+  driverName: string;
+}
+
+const RIDES_DB: MockRide[] = [
+  {
+    id: '1',
+    from: { type: 'GPS', address: 'Hostel A', coordinates: { lat: 12.0, lng: 77.0 } },
+    to: { type: 'GPS', address: 'CS Block', coordinates: { lat: 12.1, lng: 77.1 } },
+    date: '2024-01-20',
+    time: '09:00',
+    availableSeats: 3,
+    totalSeats: 4,
+    price: 0,
+    status: 'active',
+    driverId: 'd1',
+    driverName: 'Alex Johnson'
+  }
+];
+
+/**
+ * API Endpoints
+ */
+app.get('/api/rides', (req, res) => {
+  res.json({ data: RIDES_DB });
+});
+
+app.post('/api/rides', (req, res) => {
+  const newRide = {
+    ...req.body,
+    id: Date.now().toString(),
+    status: 'active',
+    driverId: 'd1', // Mock driver
+    driverName: 'Alex Johnson'
+  };
+  RIDES_DB.push(newRide);
+  res.json({ data: newRide });
+});
 
 /**
  * Serve static files from /browser

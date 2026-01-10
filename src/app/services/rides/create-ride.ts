@@ -2,10 +2,11 @@ import { inject } from '@angular/core';
 import { injectMutation, QueryClient } from '@tanstack/angular-query-experimental';
 import { ApiService } from '../api';
 import { Ride } from './get-rides';
+import { Location } from '../../types/location';
 
 export interface CreateRideRequest {
-  from: string;
-  to: string;
+  from: Location;
+  to: Location;
   date: string;
   time: string;
   totalSeats: number;

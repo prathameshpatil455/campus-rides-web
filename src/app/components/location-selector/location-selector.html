@@ -1,0 +1,55 @@
+<div class="location-selector-container">
+  <label class="selector-label">{{ label }}</label>
+  
+  <div class="map-wrapper">
+    <!-- Search Bar Overlay -->
+    <div class="search-overlay">
+      <div class="search-box">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input 
+          type="text" 
+          [(ngModel)]="searchQuery" 
+          (keydown.enter)="onSearch()"
+          placeholder="Search location or enter Digipin"
+          [disabled]="isLoading"
+        >
+        <button mat-icon-button *ngIf="searchQuery" (click)="searchQuery=''; currentLocation=null" class="clear-btn">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <button mat-mini-fab color="primary" class="locate-me-btn" (click)="useCurrentLocation()" matTooltip="Use Current Location">
+        <mat-icon>my_location</mat-icon>
+      </button>
+    </div>
+
+    <!-- Map Container -->
+    <div #mapCheck class="map-container"></div>
+    
+    <!-- Loading Indicator -->
+    <div class="loading-overlay" *ngIf="isLoading">
+      <div class="spinner"></div> 
+      <!-- Simple spinner, or use mat-spinner if available -->
+    </div>
+
+    <!-- Hint Overlay (only if no location selected) -->
+    <div class="map-overlay-hint" *ngIf="!currentLocation && !searchQuery">
+      Tap on map to pin
+    </div>
+  </div>
+
+  <!-- Selected Location Details (Bottom Sheet style) -->
+  <div class="selected-location-info" *ngIf="currentLocation">
+    <div class="info-content">
+      <mat-icon class="pin-icon">location_on</mat-icon>
+      <div class="text-details">
+        <div class="address-line" *ngIf="currentLocation.address">{{ currentLocation.address }}</div>
+        <div class="coords-line" *ngIf="!currentLocation.address">
+          {{ currentLocation.coordinates.lat | number:'1.4-4' }}, {{ currentLocation.coordinates.lng | number:'1.4-4' }}
+        </div>
+        <div class="digipin-badge" *ngIf="currentLocation.digipin">
+          Digipin: {{ currentLocation.digipin }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

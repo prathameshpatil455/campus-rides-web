@@ -1,11 +1,12 @@
 import { inject } from '@angular/core';
 import { injectQuery } from '@tanstack/angular-query-experimental';
 import { ApiService } from '../api';
+import { Location } from '../../types/location';
 
 export interface Ride {
   id: string;
-  from: string;
-  to: string;
+  from: Location;
+  to: Location;
   date: string;
   time: string;
   availableSeats: number;
