@@ -5,6 +5,7 @@ import { Dashboard } from './dashboard/dashboard';
 import { Profile } from './profile/profile';
 import { PostRide } from './post-ride/post-ride';
 import { MyRides } from './my-rides/my-rides';
+import { Messages } from './messages/messages';
 import { authGuard } from './guards/auth.guard';
 import { guestGuard } from './guards/guest.guard';
 
@@ -15,5 +16,6 @@ export const routes: Routes = [
   { path: 'profile', component: Profile, canActivate: [authGuard] },
   { path: 'post-ride', component: PostRide, canActivate: [authGuard] },
   { path: 'my-rides', component: MyRides, canActivate: [authGuard] },
+  { path: 'messages', component: Messages, canActivate: [authGuard] },
   { path: '**', redirectTo: '' },
 ];

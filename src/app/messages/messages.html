@@ -1,0 +1,225 @@
+<div class="messages-page">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon">
+          <mat-icon>directions_car</mat-icon>
+        </div>
+        <span class="logo-text">CampusRide</span>
+        <mat-icon class="collapse-icon">chevron_left</mat-icon>
+      </div>
+    </div>
+
+    <div class="driver-mode-toggle" [class.active]="isDriverMode" (click)="toggleDriverMode()">
+      <mat-icon class="toggle-icon">local_taxi</mat-icon>
+      <span>Driver Mode</span>
+      <div class="toggle-switch" [class.active]="isDriverMode">
+        <span class="toggle-slider"></span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard" class="nav-item">
+        <mat-icon>dashboard</mat-icon>
+        <span>Dashboard</span>
+      </a>
+      <a routerLink="/post-ride" class="nav-item">
+        <mat-icon>add</mat-icon>
+        <span>Post Ride</span>
+      </a>
+      <a routerLink="/my-rides" class="nav-item">
+        <mat-icon>directions_car</mat-icon>
+        <span>My Rides</span>
+      </a>
+      <a routerLink="/history" class="nav-item">
+        <mat-icon>history</mat-icon>
+        <span>History</span>
+      </a>
+      <a routerLink="/messages" class="nav-item active">
+        <mat-icon>chat_bubble_outline</mat-icon>
+        <span>Messages</span>
+      </a>
+      <a routerLink="/notifications" class="nav-item">
+        <mat-icon>notifications_outline</mat-icon>
+        <span>Notifications</span>
+      </a>
+      <a routerLink="/profile" class="nav-item">
+        <mat-icon>person_outline</mat-icon>
+        <span>Profile</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-profile">
+        <div class="user-avatar">{{ currentUser.initials }}</div>
+        <div class="user-info">
+          <div class="user-name">{{ currentUser.name }}</div>
+          <div class="user-department">{{ currentUser.department }}</div>
+        </div>
+        <mat-icon class="arrow-icon">chevron_right</mat-icon>
+      </div>
+    </div>
+  </aside>
+
+  <div class="messages-content">
+    <div class="conversations-panel">
+      <div class="conversations-header">
+        <h2 class="panel-title">Messages</h2>
+        <div class="search-container">
+          <mat-icon class="search-icon">search</mat-icon>
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Search conversations..."
+            [ngModel]="searchQuery()"
+            (ngModelChange)="searchQuery.set($event)"
+          />
+        </div>
+      </div>
+
+      <div class="conversations-list">
+        @if (conversationsQuery.isLoading()) {
+        <div class="loading-state">Loading conversations...</div>
+        } @else if (conversationsQuery.isError()) {
+        <div class="error-state">Failed to load conversations</div>
+        } @else { @for (conversation of filteredConversations(); track conversation.id) {
+        <div
+          class="conversation-item"
+          [class.active]="activeChat()?.userId === conversation.userId"
+          (click)="selectConversation(conversation)"
+        >
+          <div class="conversation-avatar-container">
+            <div class="conversation-avatar">{{ conversation.userInitials }}</div>
+            @if (conversation.isOnline) {
+            <div class="online-indicator"></div>
+            }
+          </div>
+          <div class="conversation-content">
+            <div class="conversation-header-row">
+              <span class="conversation-name">{{ conversation.userName }}</span>
+              @if (conversation.unreadCount > 0 && activeChat()?.userId !== conversation.userId) {
+              <span class="unread-badge">{{ conversation.unreadCount }}</span>
+              }
+            </div>
+            <p class="conversation-message">{{ conversation.lastMessage }}</p>
+            <p class="conversation-route">{{ conversation.route }}</p>
+          </div>
+          <span class="conversation-timestamp">{{ conversation.timestamp }}</span>
+        </div>
+        } }
+      </div>
+    </div>
+
+    <div class="chat-panel">
+      @if (activeChat(); as chat) {
+      <div class="chat-header">
+        <div class="chat-user-info">
+          <div class="chat-avatar-container">
+            <div class="chat-avatar">{{ chat.userInitials }}</div>
+            @if (chat.isOnline) {
+            <div class="online-indicator"></div>
+            }
+          </div>
+          <div class="chat-user-details">
+            <div class="chat-user-name">
+              {{ chat.userInitials }} {{ chat.userName }}
+            </div>
+            <div class="chat-user-status">
+              @if (chat.isOnline) {
+              <span class="status-text">Online</span>
+              } @else {
+              <span class="status-text">Offline</span>
+              }
+            </div>
+          </div>
+        </div>
+        <div class="chat-ride-info">
+          <span class="ride-route">{{ chat.route }}</span>
+          <div class="ride-meta">
+            <mat-icon class="meta-icon">event</mat-icon>
+            <span>{{ chat.date }}</span>
+            <mat-icon class="meta-icon">access_time</mat-icon>
+            <span>{{ chat.time }}</span>
+          </div>
+        </div>
+        <div class="chat-actions">
+          <button class="action-button" mat-icon-button>
+            <mat-icon>phone</mat-icon>
+          </button>
+          <button class="action-button" mat-icon-button>
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="chat-messages" #chatMessagesContainer>
+        @if (messagesLoading()) {
+        <div class="loading-state">Loading messages...</div>
+        } @else if (messagesError()) {
+        <div class="error-state">Failed to load messages</div>
+        } @else { @for (message of chat.messages; track message.id) {
+        <div class="message-bubble" [class.own-message]="message.isOwn">
+          <div class="message-content">{{ message.content }}</div>
+          <div class="message-time">
+            {{ message.timestamp }}
+            @if (message.isOwn) {
+            <span class="message-status">
+              @if (message.isRead) {
+              <mat-icon class="message-check read">done_all</mat-icon>
+              } @else if (message.isDelivered) {
+              <mat-icon class="message-check delivered">done_all</mat-icon>
+              } @else {
+              <mat-icon class="message-check sent">done</mat-icon>
+              }
+            </span>
+            }
+          </div>
+        </div>
+        } @if (wsService.isTyping(selectedConversationId() || '')) {
+        <div class="typing-indicator">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        } }
+      </div>
+
+      <div class="quick-replies">
+        @for (reply of quickReplies; track reply) {
+        <button class="quick-reply-btn" (click)="sendQuickReply(reply)">
+          {{ reply }}
+        </button>
+        }
+      </div>
+
+      <div class="chat-input-container">
+        <button class="input-action-btn" mat-icon-button>
+          <mat-icon>attach_file</mat-icon>
+        </button>
+        <button class="input-action-btn" mat-icon-button>
+          <mat-icon>image</mat-icon>
+        </button>
+        <input
+          type="text"
+          class="chat-input"
+          placeholder="Type a message..."
+          [(ngModel)]="messageInput"
+          (keydown.enter)="sendMessage()"
+          (input)="onMessageInput()"
+        />
+        <button class="input-action-btn" mat-icon-button>
+          <mat-icon>emoji_emotions</mat-icon>
+        </button>
+        <button class="send-button" mat-icon-button (click)="sendMessage()">
+          <mat-icon>send</mat-icon>
+        </button>
+      </div>
+      } @else {
+      <div class="no-chat-selected">
+        <mat-icon class="no-chat-icon">chat_bubble_outline</mat-icon>
+        <p class="no-chat-text">Select a conversation to start chatting</p>
+      </div>
+      }
+    </div>
+  </div>
+</div>
