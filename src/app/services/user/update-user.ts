@@ -1,26 +1,40 @@
 import { inject } from '@angular/core';
-import { injectMutation, QueryClient } from '@tanstack/angular-query-experimental';
+import { injectMutation, injectQueryClient, QueryClient } from '@tanstack/angular-query-experimental';
 import { ApiService } from '../api';
 import { User } from '../../types/user.types';
+import { AuthService } from '../auth/auth.service';
 
 export interface UpdateUserRequest {
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-  phone?: string;
+  firstName: string;
+  lastName: string;
+  department: string;
+  year: string;
+  vehicleInfo: {
+    model?: string;
+    color?: string;
+    plateNumber?: string;
+  };
 }
 
 export const useUpdateUser = () => {
   const apiService = inject(ApiService);
-  const queryClient = inject(QueryClient);
+  const authService = inject(AuthService);
+  const queryClient = injectQueryClient();
 
   return injectMutation(() => ({
     mutationFn: async (data: UpdateUserRequest) => {
-      const response = await apiService.put<User>('/users/me', data).toPromise();
+      const userId = authService.getUserId();
+      if (!userId) {
+        throw new Error('User ID is required');
+      }
+      const response = await apiService.put<User>(`/user/update`, data).toPromise();
       return response?.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['user', 'current'] });
+      const userId = authService.getUserId();
+      if (userId) {
+        queryClient.invalidateQueries({ queryKey: ['user', userId] });
+      }
     },
   }));
 };
