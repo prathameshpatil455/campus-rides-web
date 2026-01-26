@@ -51,9 +51,23 @@ export class ApiService {
     });
   }
 
+  patch<T>(endpoint: string, body?: unknown): Observable<ApiResponse<T>> {
+    return this.http.patch<ApiResponse<T>>(`${this.baseUrl}${endpoint}`, body || {}, {
+      headers: this.getHeaders(),
+    });
+  }
+
   delete<T>(endpoint: string): Observable<ApiResponse<T>> {
     return this.http.delete<ApiResponse<T>>(`${this.baseUrl}${endpoint}`, {
       headers: this.getHeaders(),
     });
+  }
+
+  postFile<T>(endpoint: string, formData: FormData): Observable<ApiResponse<T>> {
+    return this.http.post<ApiResponse<T>>(`${this.baseUrl}${endpoint}`, formData);
+  }
+
+  putFile<T>(endpoint: string, formData: FormData): Observable<ApiResponse<T>> {
+    return this.http.put<ApiResponse<T>>(`${this.baseUrl}${endpoint}`, formData);
   }
 }
