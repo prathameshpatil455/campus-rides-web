@@ -82,20 +82,40 @@ export class MyRides {
     
     // Map backend Ride to frontend Ride interface AND filter by driverId
     return data
-      .filter((r: BackendRide) => r.driverId === user.id)
-      .map((r: BackendRide) => ({
-        id: r.id,
-        date: new Date(r.date || Date.now()).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
-        time: r.time,
-        pickup: r.from?.address || (r.from?.coordinates ? `${r.from.coordinates.lat.toFixed(2)}, ${r.from.coordinates.lng.toFixed(2)}` : 'Unknown'),
-        destination: r.to?.address || (r.to?.coordinates ? `${r.to.coordinates.lat.toFixed(2)}, ${r.to.coordinates.lng.toFixed(2)}` : 'Unknown'),
-        availableSeats: `${r.availableSeats}/${r.totalSeats}`,
-        totalSeats: r.totalSeats,
-        isFree: r.price === 0,
-        status: 'active',
-        pendingRequests: 0,
-        passengers: []
-      }));
+      .filter((r: BackendRide) => {
+        const driverId = typeof r.driverId === 'object' ? r.driverId._id : r.driverId;
+        return driverId === user.id;
+      })
+      .map((r: BackendRide) => {
+        // Robust Date Formatting
+        const rideDate = new Date(r.date);
+        const formattedDate = !isNaN(rideDate.getTime()) 
+          ? rideDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+          : 'Invalid Date';
+
+        // Robust Time Formatting
+        let formattedTime = r.time || '--:--';
+        if (formattedTime.includes('T')) {
+          const timeDate = new Date(formattedTime);
+          if (!isNaN(timeDate.getTime())) {
+            formattedTime = timeDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+          }
+        }
+
+        return {
+          id: r._id,
+          date: formattedDate,
+          time: formattedTime,
+          pickup: r.from?.address || (r.from?.coordinates ? `${r.from.coordinates.lat.toFixed(2)}, ${r.from.coordinates.lng.toFixed(2)}` : 'Unknown'),
+          destination: r.to?.address || (r.to?.coordinates ? `${r.to.coordinates.lat.toFixed(2)}, ${r.to.coordinates.lng.toFixed(2)}` : 'Unknown'),
+          availableSeats: `${r.availableSeats ?? r.totalSeats ?? (r as any).seats ?? '?'} seats`,
+          totalSeats: r.totalSeats,
+          isFree: r.price === 0,
+          status: 'active' as RideStatus,
+          pendingRequests: 0,
+          passengers: []
+        };
+      });
   }
 
   get ridesByStatus(): Ride[] {

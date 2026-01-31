@@ -17,6 +17,7 @@ interface StatCard {
 }
 
 interface ActiveRide {
+  id?: string;
   driverName: string;
   driverInitials: string;
   rating: number;
@@ -81,35 +82,90 @@ export class Dashboard {
     this.router.navigate(['/auth']);
   }
 
+  private mapRide(ride: BackendRide) {
+    // Helper to Format Location
+    const formatLocation = (loc: any) => {
+      if (!loc) return 'Unknown';
+      if (loc.address) return loc.address;
+      if (loc.coordinates) return `${loc.coordinates.lat.toFixed(4)}, ${loc.coordinates.lng.toFixed(4)}`;
+      return 'Pinned Location';
+    };
+
+    // Robust Date Formatting
+    console.log(`DEBUG: Processing ride ${ride._id}, Full Object:`, JSON.stringify(ride));
+    
+    // Check for any field that looks like a date
+    const rawDate = ride.date || (ride as any).departureDate || (ride as any).dateTime || (ride as any).createdAt;
+    const rideDate = new Date(rawDate);
+    const formattedDate = !isNaN(rideDate.getTime()) 
+      ? rideDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+      : 'Invalid Date';
+
+    // Robust Time Formatting
+    let formattedTime = ride.time || (ride as any).departureTime || '--:--';
+    if (formattedTime.includes('T')) {
+      const timeDate = new Date(formattedTime);
+      if (!isNaN(timeDate.getTime())) {
+        formattedTime = timeDate.toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit', 
+          hour12: true 
+        });
+      }
+    }
+
+    // Seat Formatting - User wants "only seats visible"
+    const seatsCount = ride.availableSeats ?? ride.totalSeats ?? (ride as any).seats ?? '?';
+
+    return {
+      id: ride._id,
+      driverName: ride.driverName || 'Unknown Driver',
+      driverInitials: ride.driverName ? ride.driverName.substring(0, 2).toUpperCase() : 'UD',
+      rating: 5.0, // Mock data
+      totalRides: 10, // Mock data
+      pickup: formatLocation(ride.from),
+      destination: formatLocation(ride.to),
+      date: formattedDate,
+      time: formattedTime,
+      seats: `${seatsCount} seats`,
+      status: (ride.price === 0 ? 'free' : 'paid') as 'free' | 'paid'
+    };
+  }
+
   get activeRides(): ActiveRide[] {
     const rides = this.ridesQuery.data();
     const user = this.currentUser;
-    if (!rides || !user.id) return [];
+    
+    if (!rides) return [];
+    if (!user.id) {
+       console.warn('Dashboard: Cannot filter Active Rides - No User ID');
+       return [];
+    }
 
     return rides
-      .filter(ride => ride.driverId === user.id)
-      .map(ride => {
-        // Helper to Format Location
-        const formatLocation = (loc: any) => {
-          if (!loc) return 'Unknown';
-          if (loc.address) return loc.address;
-          if (loc.coordinates) return `${loc.coordinates.lat.toFixed(4)}, ${loc.coordinates.lng.toFixed(4)}`;
-          return 'Pinned Location';
-        };
+      .filter(ride => {
+        // Handle both populated object and string ID
+        const rideDriverId = typeof ride.driverId === 'object' ? ride.driverId._id : ride.driverId;
+        return rideDriverId === user.id;
+      })
+      .map(ride => this.mapRide(ride));
+  }
 
-        return {
-          driverName: ride.driverName || 'Unknown Driver',
-          driverInitials: ride.driverName ? ride.driverName.substring(0, 2).toUpperCase() : 'UD',
-          rating: 5.0, // Mock data
-          totalRides: 10, // Mock data
-          pickup: formatLocation(ride.from),
-          destination: formatLocation(ride.to),
-          date: new Date(ride.date).toLocaleDateString(), // Format date
-          time: ride.time,
-          seats: `${ride.availableSeats}/${ride.totalSeats} seats`,
-          status: ride.price === 0 ? 'free' : 'paid'
-        };
-      });
+  get availableRides(): ActiveRide[] {
+    const rides = this.ridesQuery.data();
+    const user = this.currentUser;
+    
+    if (!rides) return [];
+
+    return rides.filter(ride => {
+      // Show rides NOT created by current user
+      const rideDriverId = typeof ride.driverId === 'object' ? ride.driverId._id : ride.driverId;
+      
+      // If we don't have a user ID (Guest), show everything
+      if (!user.id) return true;
+      
+      return rideDriverId !== user.id;
+    }).map(ride => this.mapRide(ride));
   }
 
   get statCards(): StatCard[] {

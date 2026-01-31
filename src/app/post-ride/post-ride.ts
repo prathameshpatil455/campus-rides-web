@@ -61,16 +61,7 @@ export class PostRide {
 
   postRideForm: FormGroup;
 
-  destinations = [
-    { value: 'cs-block', label: 'Computer Science Block' },
-    { value: 'ee-block', label: 'Electrical Engineering Block' },
-    { value: 'me-block', label: 'Mechanical Engineering Block' },
-    { value: 'ce-block', label: 'Civil Engineering Block' },
-    { value: 'it-block', label: 'Information Technology Block' },
-    { value: 'ece-block', label: 'Electronics & Communication Block' },
-    { value: 'main-gate', label: 'Main Gate' },
-    { value: 'library', label: 'Library' },
-  ];
+
 
   availableSeats = [
     { value: '1', label: '1 seat' },
@@ -106,7 +97,9 @@ export class PostRide {
   }
 
   onLocationChange(field: string, location: Location) {
+    console.log(`PostRide: onLocationChange for ${field}`, location);
     this.postRideForm.patchValue({ [field]: location });
+    console.log(`PostRide: Form value for ${field} updated to`, this.postRideForm.get(field)?.value);
   }
 
   createRideMutation = useCreateRide();
@@ -136,10 +129,23 @@ export class PostRide {
           });
           this.router.navigate(['/my-rides']);
         },
-        onError: (error) => {
-          console.error('Failed to create ride', error);
-          this.snackBar.open(getErrorMessage(error), 'Close', {
-            duration: 5000,
+        onError: (error: any) => {
+          console.error('Failed to create ride:', error);
+          
+          let errorMessage = getErrorMessage(error);
+          if (error.error && typeof error.error === 'object') {
+             // Try to extract more specific validation errors if available
+             if (error.error.message) {
+                 errorMessage = error.error.message;
+             }
+             // Sometimes validation errors come as a list or nested object
+             if (error.error.errors) {
+                 errorMessage += ` ${JSON.stringify(error.error.errors)}`;
+             }
+          }
+
+          this.snackBar.open(`Error: ${errorMessage}`, 'Close', {
+            duration: 10000, // Longer duration to read
             horizontalPosition: 'right',
             verticalPosition: 'top',
           });

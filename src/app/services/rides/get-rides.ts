@@ -4,7 +4,7 @@ import { ApiService } from '../api';
 import { Location } from '../../types/location';
 
 export interface Ride {
-  id: string;
+  _id: string;
   from: Location;
   to: Location;
   date: string;
@@ -13,7 +13,7 @@ export interface Ride {
   totalSeats: number;
   price: number;
   status: string;
-  driverId: string;
+  driverId: any; // Populated user object or string ID
   driverName: string;
   driverPhone?: string;
 }

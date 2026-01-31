@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { isPlatformBrowser } from '@angular/common';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
@@ -15,10 +16,22 @@ export interface ApiResponse<T> {
 export class ApiService {
   private readonly baseUrl = environment.apiBaseUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   private getHeaders(): HttpHeaders {
-    return new HttpHeaders().set('Content-Type', 'application/json');
+    let headers = new HttpHeaders().set('Content-Type', 'application/json');
+    
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        headers = headers.set('Authorization', `Bearer ${token}`);
+      }
+    }
+    
+    return headers;
   }
 
   get<T>(

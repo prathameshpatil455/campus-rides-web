@@ -17,17 +17,26 @@ export class AuthService {
 
   async loadUserData(): Promise<void> {
     const userId = this.getUserId();
+    console.log('AuthService: loadUserData called. UserId:', userId);
+    
     if (!userId) {
+      console.warn('AuthService: No userId found in storage');
       return;
     }
 
     try {
+      console.log(`AuthService: Fetching user data from /user/${userId}`);
       const response = await this.apiService.get<User>(`/user/${userId}`).toPromise();
+      console.log('AuthService: User data response:', response);
+      
       if (response?.data) {
         this.setUserData(response.data);
+        console.log('AuthService: User data set successfully');
+      } else {
+        console.error('AuthService: Response missing data property', response);
       }
     } catch (error) {
-      console.error('Failed to load user data:', error);
+      console.error('AuthService: Failed to load user data:', error);
     }
   }
 
@@ -88,14 +97,28 @@ export class AuthService {
     const storage = this.getStorage();
     if (storage) {
       const stored = storage.getItem(USER_DATA_KEY);
+      const storedId = storage.getItem(USER_ID_KEY);
+      
+      console.log('AuthService: getUserData checking storage.');
+      console.log('AuthService: storedData exists?', !!stored);
+      console.log('AuthService: storedId:', storedId);
+
       if (stored) {
         try {
           const user = JSON.parse(stored);
           this.currentUser.set(user);
           return user;
-        } catch {
+        } catch (e) {
+          console.error('AuthService: Error parsing stored userData', e);
           return null;
         }
+      }
+      
+      // Fallback: If we have an ID but no object, return a partial user object
+      // so the app can at least function while the profile is loading.
+      if (storedId) {
+        console.warn('AuthService: Found userId but no userData. Returning partial user.');
+        return { _id: storedId, firstName: 'User', lastName: '', email: '', department: '', year: '', studentIdNumber: '' } as User;
       }
     }
     return null;
