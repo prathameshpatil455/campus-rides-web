@@ -15,6 +15,10 @@
         <mat-icon>dashboard</mat-icon>
         <span>Dashboard</span>
       </a>
+      <a routerLink="/all-rides" class="nav-item">
+        <mat-icon>list</mat-icon>
+        <span>All Rides</span>
+      </a>
       <a routerLink="/post-ride" class="nav-item">
         <mat-icon>add</mat-icon>
         <span>Post Ride</span>
@@ -30,10 +34,6 @@
       <a routerLink="/messages" class="nav-item">
         <mat-icon>chat_bubble_outline</mat-icon>
         <span>Messages</span>
-      </a>
-      <a routerLink="/notifications" class="nav-item">
-        <mat-icon>notifications_outline</mat-icon>
-        <span>Notifications</span>
       </a>
       <a routerLink="/profile" class="nav-item">
         <mat-icon>person_outline</mat-icon>
@@ -143,9 +143,9 @@
                     <mat-icon>edit</mat-icon>
                     <span>Edit Ride</span>
                   </button>
-                  <button mat-menu-item (click)="cancelRide(ride)" class="danger-action">
-                    <mat-icon>cancel</mat-icon>
-                    <span>Cancel Ride</span>
+                  <button mat-menu-item (click)="deleteRide(ride)" class="danger-action">
+                    <mat-icon>delete</mat-icon>
+                    <span>Delete Ride</span>
                   </button>
                 </mat-menu>
               </div>

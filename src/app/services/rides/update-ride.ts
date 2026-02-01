@@ -24,6 +24,7 @@ export const useUpdateRide = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rides'] });
+      queryClient.invalidateQueries({ queryKey: ['rides', 'my'] });
       queryClient.invalidateQueries({ queryKey: ['user', 'rides'] });
     },
   }));
