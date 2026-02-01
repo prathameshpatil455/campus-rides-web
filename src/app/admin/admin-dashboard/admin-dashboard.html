@@ -1,0 +1,103 @@
+<div class="admin-dashboard-page">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon">
+          <mat-icon>directions_car</mat-icon>
+        </div>
+        <span class="logo-text">CampusRide</span>
+        <mat-icon class="collapse-icon">chevron_left</mat-icon>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/admin/dashboard" class="nav-item active">
+        <mat-icon>dashboard</mat-icon>
+        <span>Dashboard</span>
+      </a>
+      <a routerLink="/admin/documents" class="nav-item">
+        <mat-icon>description</mat-icon>
+        <span>Document Verification</span>
+      </a>
+      <a routerLink="/admin/users" class="nav-item">
+        <mat-icon>people</mat-icon>
+        <span>User Management</span>
+      </a>
+      <a routerLink="/admin/rides" class="nav-item">
+        <mat-icon>directions_car</mat-icon>
+        <span>Ride Management</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-profile">
+        <div class="user-avatar">{{ currentUser.initials }}</div>
+        <div class="user-info">
+          <div class="user-name">{{ currentUser.name }}</div>
+          <div class="user-department">{{ currentUser.department }}</div>
+        </div>
+        <mat-icon class="logout-icon" (click)="logout()">logout</mat-icon>
+      </div>
+    </div>
+  </aside>
+
+  <main class="dashboard-content">
+    <div class="content-wrapper">
+      <header class="dashboard-header">
+        <div>
+          <h1 class="page-title">Admin Dashboard</h1>
+          <p class="page-subtitle">Manage and monitor the platform</p>
+        </div>
+      </header>
+
+      @if (userQuery.isLoading() || statsQuery.isLoading()) {
+      <div class="loading-container" style="pointer-events: none;">
+        <p>Loading dashboard data...</p>
+      </div>
+      } @else if (userQuery.isError() || statsQuery.isError()) {
+      <div class="error-container">
+        <p>Error loading dashboard data. Please try again later.</p>
+      </div>
+      } @else {
+      <div class="stats-grid">
+        @for (stat of statCards; track stat.title) {
+        <mat-card class="stat-card" [class.primary]="stat.variant === 'primary'"
+          [class.warning]="stat.variant === 'warning'" [class.success]="stat.variant === 'success'">
+          <div class="stat-content">
+            <div class="stat-icon-container">
+              <mat-icon class="stat-icon">{{ stat.icon }}</mat-icon>
+            </div>
+            <div class="stat-info">
+              <h3 class="stat-value">{{ stat.value }}</h3>
+              <p class="stat-title">{{ stat.title }}</p>
+              <p class="stat-subtitle">{{ stat.subtitle }}</p>
+            </div>
+          </div>
+        </mat-card>
+        }
+      </div>
+
+      <div class="quick-actions">
+        <h2 class="section-title">Quick Actions</h2>
+        <div class="actions-grid">
+          <a routerLink="/admin/documents" class="action-card">
+            <mat-icon>description</mat-icon>
+            <h3>Review Documents</h3>
+            <p>Verify user documents</p>
+          </a>
+          <a routerLink="/admin/users" class="action-card">
+            <mat-icon>people</mat-icon>
+            <h3>Manage Users</h3>
+            <p>View and manage all users</p>
+          </a>
+          <a routerLink="/admin/rides" class="action-card">
+            <mat-icon>directions_car</mat-icon>
+            <h3>Manage Rides</h3>
+            <p>View and manage all rides</p>
+          </a>
+        </div>
+      </div>
+      }
+    </div>
+  </main>
+</div>

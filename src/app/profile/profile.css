@@ -249,33 +249,9 @@
   font-size: 2.5rem;
 }
 
-.avatar-edit-btn {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 36px;
-  height: 36px;
-  background-color: white;
-  border: 2px solid #e2e8f0;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s;
-}
-
-.avatar-edit-btn:hover {
-  background-color: #f5f7fa;
-  border-color: #14b8a6;
-}
-
-.avatar-edit-btn mat-icon {
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
-  color: #64748b;
+.profile-avatar-image {
+  object-fit: cover;
+  background-color: transparent;
 }
 
 .profile-summary-info {
@@ -359,6 +335,24 @@
 
 .edit-profile-btn mat-icon {
   margin-right: 0.5rem;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-self: flex-start;
+}
+
+.cancel-btn,
+.save-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cancel-btn mat-icon,
+.save-btn mat-icon {
+  margin-right: 0.25rem;
 }
 
 .info-cards-grid {
@@ -513,6 +507,10 @@
   background-color: #e2e8f0;
 }
 
+.verification-icon-container.rejected {
+  background-color: #fee2e2;
+}
+
 .verification-icon {
   font-size: 24px;
   width: 24px;
@@ -529,6 +527,10 @@
 
 .verification-icon-container.not-uploaded .verification-icon {
   color: #64748b;
+}
+
+.verification-icon-container.rejected .verification-icon {
+  color: #991b1b;
 }
 
 .verification-content {
@@ -572,6 +574,11 @@
   color: #64748b;
 }
 
+.verification-badge.rejected {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
 .verification-description {
   font-size: 0.875rem;
   color: #64748b;
@@ -584,11 +591,21 @@
   margin: 0;
 }
 
-.upload-btn {
+.verification-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.upload-btn,
+.preview-btn,
+.reupload-btn {
   align-self: flex-start;
 }
 
-.upload-btn mat-icon {
+.upload-btn mat-icon,
+.preview-btn mat-icon,
+.reupload-btn mat-icon {
   margin-right: 0.5rem;
 }
 
