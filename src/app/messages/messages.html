@@ -42,7 +42,7 @@
               }
             </div>
             <p class="conversation-message">{{ conversation.lastMessage }}</p>
-            <p class="conversation-route">{{ conversation.route }}</p>
+            <p class="conversation-route">{{ formatMessageContent(conversation.route) }}</p>
           </div>
           <span class="conversation-timestamp">{{ conversation.timestamp }}</span>
         </div>
@@ -53,42 +53,39 @@
     <div class="chat-panel">
       @if (activeChat(); as chat) {
       <div class="chat-header">
-        <div class="chat-user-info">
-          <div class="chat-avatar-container">
-            <div class="chat-avatar">{{ chat.userInitials }}</div>
-            @if (chat.isOnline) {
-            <div class="online-indicator"></div>
-            }
-          </div>
-          <div class="chat-user-details">
-            <div class="chat-user-name">
-              {{ chat.userInitials }} {{ chat.userName }}
-            </div>
-            <div class="chat-user-status">
+        <div class="chat-header-top">
+          <div class="chat-user-info">
+            <div class="chat-avatar-container">
+              <div class="chat-avatar">{{ chat.userInitials }}</div>
               @if (chat.isOnline) {
-              <span class="status-text">Online</span>
-              } @else {
-              <span class="status-text">Offline</span>
+              <div class="online-indicator"></div>
               }
             </div>
+            <div class="chat-user-details">
+              <div class="chat-user-name">{{ chat.userInitials }} {{ chat.userName }}</div>
+              <div class="chat-user-status">
+                @if (chat.isOnline) {
+                <span class="status-text">Online</span>
+                } @else {
+                <span class="status-text">Offline</span>
+                }
+              </div>
+            </div>
+          </div>
+          <div class="chat-actions">
+            <button class="action-button" mat-icon-button>
+              <mat-icon>more_vert</mat-icon>
+            </button>
           </div>
         </div>
         <div class="chat-ride-info">
-          <span class="ride-route">{{ chat.route }}</span>
+          <span class="ride-route">{{ formatMessageContent(chat.route) }}</span>
           <div class="ride-meta">
             <mat-icon class="meta-icon">event</mat-icon>
             <span>{{ chat.date }}</span>
             <mat-icon class="meta-icon">access_time</mat-icon>
             <span>{{ chat.time }}</span>
           </div>
-        </div>
-        <div class="chat-actions">
-          <button class="action-button" mat-icon-button>
-            <mat-icon>phone</mat-icon>
-          </button>
-          <button class="action-button" mat-icon-button>
-            <mat-icon>more_vert</mat-icon>
-          </button>
         </div>
       </div>
 
@@ -99,7 +96,7 @@
         <div class="error-state">Failed to load messages</div>
         } @else { @for (message of chat.messages; track message.id) {
         <div class="message-bubble" [class.own-message]="message.isOwn">
-          <div class="message-content">{{ message.content }}</div>
+          <div class="message-content">{{ formatMessageContent(message.content) }}</div>
           <div class="message-time">
             {{ message.timestamp }}
             @if (message.isOwn) {
@@ -133,12 +130,6 @@
       </div>
 
       <div class="chat-input-container">
-        <button class="input-action-btn" mat-icon-button>
-          <mat-icon>attach_file</mat-icon>
-        </button>
-        <button class="input-action-btn" mat-icon-button>
-          <mat-icon>image</mat-icon>
-        </button>
         <input
           type="text"
           class="chat-input"
@@ -147,9 +138,23 @@
           (keydown.enter)="sendMessage()"
           (input)="onMessageInput()"
         />
-        <button class="input-action-btn" mat-icon-button>
+        <button
+          class="input-action-btn"
+          mat-icon-button
+          #emojiTrigger="matMenuTrigger"
+          [matMenuTriggerFor]="emojiMenu"
+        >
           <mat-icon>emoji_emotions</mat-icon>
         </button>
+        <mat-menu #emojiMenu class="emoji-picker-menu">
+          <div class="emoji-picker-panel">
+            @for (emoji of emojiList; track emoji) {
+            <button type="button" class="emoji-picker-btn" (click)="insertEmoji(emoji)">
+              {{ emoji }}
+            </button>
+            }
+          </div>
+        </mat-menu>
         <button class="send-button" mat-icon-button (click)="sendMessage()">
           <mat-icon>send</mat-icon>
         </button>

@@ -13,56 +13,52 @@
 
   <nav class="sidebar-nav">
     @if (mode === 'student') {
-      <a
-        routerLink="/dashboard"
-        class="nav-item"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-      >
-        <mat-icon>dashboard</mat-icon>
-        <span>Dashboard</span>
-      </a>
-      <a routerLink="/all-rides" class="nav-item" routerLinkActive="active">
-        <mat-icon>list</mat-icon>
-        <span>All Rides</span>
-      </a>
-      <a routerLink="/post-ride" class="nav-item" routerLinkActive="active">
-        <mat-icon>add</mat-icon>
-        <span>Post Ride</span>
-      </a>
-      <a routerLink="/my-rides" class="nav-item" routerLinkActive="active">
-        <mat-icon>directions_car</mat-icon>
-        <span>My Rides</span>
-      </a>
-      <a routerLink="/history" class="nav-item" routerLinkActive="active">
-        <mat-icon>history</mat-icon>
-        <span>History</span>
-      </a>
-      <a routerLink="/messages" class="nav-item" routerLinkActive="active">
-        <mat-icon>chat_bubble_outline</mat-icon>
-        <span>Messages</span>
-      </a>
-      <a routerLink="/profile" class="nav-item" routerLinkActive="active">
-        <mat-icon>person_outline</mat-icon>
-        <span>Profile</span>
-      </a>
+    <a
+      routerLink="/dashboard"
+      class="nav-item"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      <mat-icon>dashboard</mat-icon>
+      <span>Dashboard</span>
+    </a>
+    <a routerLink="/all-rides" class="nav-item" routerLinkActive="active">
+      <mat-icon>list</mat-icon>
+      <span>All Rides</span>
+    </a>
+    <a routerLink="/post-ride" class="nav-item" routerLinkActive="active">
+      <mat-icon>add</mat-icon>
+      <span>Post Ride</span>
+    </a>
+    <a routerLink="/my-rides" class="nav-item" routerLinkActive="active">
+      <mat-icon>directions_car</mat-icon>
+      <span>My Rides</span>
+    </a>
+    <a routerLink="/messages" class="nav-item" routerLinkActive="active">
+      <mat-icon>chat_bubble_outline</mat-icon>
+      <span>Messages</span>
+    </a>
+    <a routerLink="/profile" class="nav-item" routerLinkActive="active">
+      <mat-icon>person_outline</mat-icon>
+      <span>Profile</span>
+    </a>
     } @else if (mode === 'admin') {
-      <a routerLink="/admin/dashboard" class="nav-item" routerLinkActive="active">
-        <mat-icon>dashboard</mat-icon>
-        <span>Dashboard</span>
-      </a>
-      <a routerLink="/admin/documents" class="nav-item" routerLinkActive="active">
-        <mat-icon>description</mat-icon>
-        <span>Document Verification</span>
-      </a>
-      <a routerLink="/admin/users" class="nav-item" routerLinkActive="active">
-        <mat-icon>people</mat-icon>
-        <span>User Management</span>
-      </a>
-      <a routerLink="/admin/rides" class="nav-item" routerLinkActive="active">
-        <mat-icon>directions_car</mat-icon>
-        <span>Ride Management</span>
-      </a>
+    <a routerLink="/admin/dashboard" class="nav-item" routerLinkActive="active">
+      <mat-icon>dashboard</mat-icon>
+      <span>Dashboard</span>
+    </a>
+    <a routerLink="/admin/documents" class="nav-item" routerLinkActive="active">
+      <mat-icon>description</mat-icon>
+      <span>Document Verification</span>
+    </a>
+    <a routerLink="/admin/users" class="nav-item" routerLinkActive="active">
+      <mat-icon>people</mat-icon>
+      <span>User Management</span>
+    </a>
+    <a routerLink="/admin/rides" class="nav-item" routerLinkActive="active">
+      <mat-icon>directions_car</mat-icon>
+      <span>Ride Management</span>
+    </a>
     }
   </nav>
 

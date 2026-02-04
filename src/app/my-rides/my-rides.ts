@@ -9,6 +9,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { Ride as BackendRide } from '../services/rides/get-rides';
 import { useGetMyRides } from '../services/rides/get-my-rides';
 import { useDeleteRide } from '../services/rides/delete-ride';
+import { useCompleteRide } from '../services/rides/complete-ride';
 import { AuthService } from '../services/auth/auth.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { inject } from '@angular/core';
@@ -57,15 +58,19 @@ export class MyRides {
   selectedTab: RideStatus = 'active';
   myRidesQuery = useGetMyRides(() => ({ status: this.selectedTab }));
   deleteRideMutation = useDeleteRide();
+  completeRideMutation = useCompleteRide();
 
   private authService = inject(AuthService);
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
 
-
   private formatLocation(loc: unknown): string {
     if (!loc || typeof loc !== 'object') return 'Unknown';
-    const o = loc as { name?: string; address?: string; coordinates?: { lat?: number; lng?: number; latitude?: number; longitude?: number } };
+    const o = loc as {
+      name?: string;
+      address?: string;
+      coordinates?: { lat?: number; lng?: number; latitude?: number; longitude?: number };
+    };
     if (o.name?.trim()) return o.name.trim();
     if (o.address?.trim()) return o.address.trim();
     if (o.coordinates) {
@@ -87,14 +92,20 @@ export class MyRides {
     if (typeof formattedTime === 'string' && formattedTime.includes('T')) {
       const timeDate = new Date(formattedTime);
       if (!isNaN(timeDate.getTime())) {
-        formattedTime = timeDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        formattedTime = timeDate.toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+        });
       }
     }
 
     const pickupLoc = (r as { pickup?: unknown }).pickup ?? r.from;
     const destLoc = (r as { destination?: unknown }).destination ?? r.to;
     const seatsCount = r.availableSeats ?? r.totalSeats ?? (r as { seats?: number }).seats ?? 0;
-    const status = (r.status === 'completed' || r.status === 'cancelled' ? r.status : 'active') as RideStatus;
+    const status = (
+      r.status === 'completed' || r.status === 'cancelled' ? r.status : 'active'
+    ) as RideStatus;
 
     return {
       id: r._id,
@@ -107,7 +118,7 @@ export class MyRides {
       isFree: r.price === 0,
       status,
       pendingRequests: 0,
-      passengers: []
+      passengers: [],
     };
   }
 
@@ -137,8 +148,17 @@ export class MyRides {
     this.selectedTab = tabs[tabIndex];
   }
 
-  editRide(ride: Ride) {
-    console.log('Edit ride:', ride);
+  completeRide(ride: Ride) {
+    this.completeRideMutation.mutate(ride.id, {
+      onSuccess: () => {
+        this.snackBar.open('Ride marked as completed.', 'Close', { duration: 3000 });
+      },
+      onError: () => {
+        this.snackBar.open('Failed to complete ride. Please try again.', 'Close', {
+          duration: 3000,
+        });
+      },
+    });
   }
 
   deleteRide(ride: Ride) {
@@ -152,9 +172,4 @@ export class MyRides {
       },
     });
   }
-
-  viewDetails(ride: Ride) {
-    console.log('View details:', ride);
-  }
 }
-
