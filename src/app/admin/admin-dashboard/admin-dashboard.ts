@@ -7,6 +7,7 @@ import { MatCardModule } from '@angular/material/card';
 import { AuthService } from '../../services/auth/auth.service';
 import { useGetCurrentUser } from '../../services/user/get-current-user';
 import { useGetAdminStats } from '../../services/admin/get-admin-stats';
+import { SidebarComponent } from '../../components/sidebar/sidebar';
 
 interface StatCard {
   title: string;
@@ -25,6 +26,7 @@ interface StatCard {
     MatIconModule,
     MatButtonModule,
     MatCardModule,
+    SidebarComponent,
   ],
   templateUrl: './admin-dashboard.html',
   styleUrl: './admin-dashboard.css',
@@ -94,8 +96,4 @@ export class AdminDashboard {
     ];
   }
 
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/auth']);
-  }
 }

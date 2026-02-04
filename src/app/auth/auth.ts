@@ -174,10 +174,24 @@ export class Auth {
         password: formValue.password,
       },
       {
-        onSuccess: async (response) => {
-          if (response?.token && response?.userId) {
-            this.authService.setAuthData(response.token, response.userId);
-            await this.authService.loadUserData();
+        onSuccess: async (response: any) => {
+          console.log('Login Response Debug:', response);
+          
+          // Robustly find the User ID and Token
+          const token = response?.token;
+          const userId = response?.userId || response?.id || response?._id || response?.user?._id || response?.user?.id;
+
+          if (token && userId) {
+            console.log(`Login Successful. Saving Token: ${token.substring(0, 10)}... and UserId: ${userId}`);
+            this.authService.setAuthData(token, userId);
+            
+            // If the response includes the full user object, save it directly to avoid a fetch
+            if (response.user) {
+              console.log('Login response contained user data, saving directly.');
+              this.authService.setUserData(response.user);
+            } else {
+              await this.authService.loadUserData();
+            }
 
             this.snackBar.open('Login successful!', 'Close', {
               duration: 3000,
@@ -186,6 +200,9 @@ export class Auth {
               panelClass: ['success-toast'],
             });
             this.router.navigate(['/dashboard']);
+          } else {
+            console.error('Login failed: Missing token or userId in response', response);
+            this.snackBar.open('Login failed: Invalid server response', 'Close', { duration: 3000 });
           }
         },
         onError: (error) => {

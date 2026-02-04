@@ -4,7 +4,7 @@ import { ApiService } from '../api';
 
 export interface CreateBookingRequest {
   rideId: string;
-  seats: number;
+  seats?: number;
 }
 
 export interface CreateBookingResponse {

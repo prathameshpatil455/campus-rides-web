@@ -34,6 +34,7 @@ export class LocationSelector implements OnInit, AfterViewInit {
   private map: any; 
   private marker: any;
   private L: any;
+  private resizeObserver: ResizeObserver | null = null;
 
   constructor(
     private digipinService: DigipinService,
@@ -45,11 +46,20 @@ export class LocationSelector implements OnInit, AfterViewInit {
   async ngAfterViewInit() {
     if (isPlatformBrowser(this.platformId)) {
       this.L = await import('leaflet');
-      this.initMap();
+      // Small delay to ensure container has dimensions
+      setTimeout(() => this.initMap(), 100);
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
     }
   }
 
   private initMap() {
+    if (!this.mapContainer) return;
+    
     const L = this.L;
     // Default: Centre of India or a specific Campus location
     const initialState = { lat: 12.9716, lng: 77.5946, zoom: 15 }; 
@@ -61,6 +71,12 @@ export class LocationSelector implements OnInit, AfterViewInit {
       initialState.zoom
     );
     
+    // Add ResizeObserver to handle container size changes
+    this.resizeObserver = new ResizeObserver(() => {
+      this.map.invalidateSize();
+    });
+    this.resizeObserver.observe(this.mapContainer.nativeElement);
+
     // Add Zoom control to bottom-right (optional, better for mobile)
     L.control.zoom({ position: 'bottomright' }).addTo(this.map);
 
@@ -70,6 +86,7 @@ export class LocationSelector implements OnInit, AfterViewInit {
     }).addTo(this.map);
 
     this.map.on('click', (e: any) => {
+      console.log('LocationSelector: Map clicked', e.latlng);
       this.setMapLocation(e.latlng.lat, e.latlng.lng, 'Pinned Location');
     });
     
@@ -134,6 +151,9 @@ export class LocationSelector implements OnInit, AfterViewInit {
     if (!this.map || !this.L) return;
     const L = this.L;
 
+    // Invalidate size before setting view regarding specific issues
+    this.map.invalidateSize();
+
     if (this.marker) {
       this.marker.setLatLng([lat, lng]);
     } else {
@@ -142,12 +162,14 @@ export class LocationSelector implements OnInit, AfterViewInit {
 
     this.map.setView([lat, lng], 16);
 
+    console.log('LocationSelector: setMapLocation called', { lat, lng, type, address });
     this.currentLocation = {
       type,
       digipin,
       coordinates: { lat, lng },
       address
     };
+    console.log('LocationSelector: Emitting locationChange', this.currentLocation);
     this.locationChange.emit(this.currentLocation);
   }
 

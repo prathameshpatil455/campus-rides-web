@@ -1,57 +1,5 @@
 <div class="post-ride-page">
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <div class="logo">
-        <div class="logo-icon">
-          <mat-icon>directions_car</mat-icon>
-        </div>
-        <span class="logo-text">CampusRide</span>
-        <mat-icon class="collapse-icon">chevron_left</mat-icon>
-      </div>
-    </div>
-
-    <nav class="sidebar-nav">
-      <a routerLink="/dashboard" class="nav-item">
-        <mat-icon>dashboard</mat-icon>
-        <span>Dashboard</span>
-      </a>
-      <a routerLink="/post-ride" class="nav-item active">
-        <mat-icon>add</mat-icon>
-        <span>Post Ride</span>
-      </a>
-      <a routerLink="/my-rides" class="nav-item">
-        <mat-icon>directions_car</mat-icon>
-        <span>My Rides</span>
-      </a>
-      <a routerLink="/history" class="nav-item">
-        <mat-icon>history</mat-icon>
-        <span>History</span>
-      </a>
-      <a routerLink="/messages" class="nav-item">
-        <mat-icon>chat_bubble_outline</mat-icon>
-        <span>Messages</span>
-      </a>
-      <a routerLink="/notifications" class="nav-item">
-        <mat-icon>notifications_outline</mat-icon>
-        <span>Notifications</span>
-      </a>
-      <a routerLink="/profile" class="nav-item">
-        <mat-icon>person_outline</mat-icon>
-        <span>Profile</span>
-      </a>
-    </nav>
-
-    <div class="sidebar-footer">
-      <div class="user-profile">
-        <div class="user-avatar">{{ currentUser.initials }}</div>
-        <div class="user-info">
-          <div class="user-name">{{ currentUser.name }}</div>
-          <div class="user-department">{{ currentUser.department }}</div>
-        </div>
-        <mat-icon class="logout-icon">chevron_right</mat-icon>
-      </div>
-    </div>
-  </aside>
+  <app-sidebar></app-sidebar>
 
   <main class="post-ride-content">
     <div class="content-wrapper">
@@ -68,14 +16,14 @@
           </div>
           <div class="card-content">
             <div class="location-group">
-              <app-location-selector label="Pickup Location" (locationChange)="onLocationChange('from', $event)"></app-location-selector>
+              <app-location-selector label=" Pickup Location " (locationChange)="onLocationChange('from', $event)"></app-location-selector>
               @if (postRideForm.get('from')?.invalid && postRideForm.get('from')?.touched) {
                 <mat-error>Pickup location is required</mat-error>
               }
             </div>
 
             <div class="location-group">
-              <app-location-selector label="Destination" (locationChange)="onLocationChange('to', $event)"></app-location-selector>
+              <app-location-selector label=" Destination " (locationChange)="onLocationChange('to', $event)"></app-location-selector>
               @if (postRideForm.get('to')?.invalid && postRideForm.get('to')?.touched) {
                 <mat-error>Destination is required</mat-error>
               }
@@ -90,8 +38,8 @@
           </div>
           <div class="card-content">
             <div class="form-row">
-              <mat-form-field appearance="outline" class="half-width">
-                <mat-label>Date *</mat-label>
+              <mat-form-field appearance="outline" class="half-width" [hideRequiredMarker]="true">
+                <mat-label>*Date*</mat-label>
                 <input matInput [matDatepicker]="picker" formControlName="date" placeholder="dd-mm-yyyy" />
                 <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-datepicker #picker></mat-datepicker>
@@ -100,8 +48,8 @@
                 }
               </mat-form-field>
 
-              <mat-form-field appearance="outline" class="half-width">
-                <mat-label>Departure Time *</mat-label>
+              <mat-form-field appearance="outline" class="half-width" [hideRequiredMarker]="true">
+                <mat-label>*Departure Time*</mat-label>
                 <input matInput #timePicker formControlName="departureTime" placeholder="--:--" type="time" />
                 <mat-icon matSuffix (click)="timePicker.showPicker()" style="cursor: pointer">schedule</mat-icon>
                 @if (postRideForm.get('departureTime')?.invalid &&
@@ -119,8 +67,8 @@
             <h3 class="card-title">Seats & Pricing</h3>
           </div>
           <div class="card-content">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Available Seats *</mat-label>
+            <mat-form-field appearance="outline" class="full-width" [hideRequiredMarker]="true">
+              <mat-label>*Available Seats*</mat-label>
               <mat-select formControlName="availableSeats" placeholder="Select seats">
                 @for (seat of availableSeats; track seat.value) {
                 <mat-option [value]="seat.value">{{ seat.label }}</mat-option>

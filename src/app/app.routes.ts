@@ -5,6 +5,7 @@ import { Dashboard } from './dashboard/dashboard';
 import { Profile } from './profile/profile';
 import { PostRide } from './post-ride/post-ride';
 import { MyRides } from './my-rides/my-rides';
+import { AllRides } from './all-rides/all-rides';
 import { Messages } from './messages/messages';
 import { AdminDashboard } from './admin/admin-dashboard/admin-dashboard';
 import { AdminDocuments } from './admin/admin-documents/admin-documents';
@@ -19,6 +20,7 @@ export const routes: Routes = [
   { path: 'profile', component: Profile, canActivate: [authGuard] },
   { path: 'post-ride', component: PostRide, canActivate: [authGuard] },
   { path: 'my-rides', component: MyRides, canActivate: [authGuard] },
+  { path: 'all-rides', component: AllRides, canActivate: [authGuard] },
   { path: 'messages', component: Messages, canActivate: [authGuard] },
   { path: 'admin/dashboard', component: AdminDashboard, canActivate: [adminGuard] },
   { path: 'admin/documents', component: AdminDocuments, canActivate: [adminGuard] },

@@ -1,0 +1,101 @@
+<div class="all-rides-page">
+  <app-sidebar></app-sidebar>
+
+  <main class="all-rides-content">
+    <div class="content-wrapper">
+      <header class="page-header">
+        <h1 class="page-title">All Rides</h1>
+        <p class="page-subtitle">Browse and book rides from the campus community</p>
+      </header>
+
+      @if (isLoading) {
+        <div class="loading-state">
+          <p>Loading rides...</p>
+        </div>
+      } @else {
+        <div class="rides-list">
+          @for (ride of rides; track ride.id) {
+            <div class="ride-card">
+              <div class="ride-header">
+                <div class="ride-driver">
+                  <div class="driver-avatar">{{ ride.driverInitials }}</div>
+                  <div class="driver-info">
+                    <div class="driver-name">{{ ride.driverName }}</div>
+                    <div class="driver-rating">★ {{ ride.rating }} • {{ ride.totalRides }} rides</div>
+                  </div>
+                </div>
+                <span class="ride-status" [class.free]="ride.status === 'free'">
+                  {{ ride.status === 'free' ? 'Free' : 'Paid' }}
+                </span>
+              </div>
+              <div class="ride-details">
+                <div class="ride-location">
+                  <mat-icon class="location-icon pickup">place</mat-icon>
+                  <span>Pickup: {{ ride.pickup }}</span>
+                </div>
+                <div class="ride-location">
+                  <mat-icon class="location-icon destination">place</mat-icon>
+                  <span>Destination: {{ ride.destination }}</span>
+                </div>
+              </div>
+              <div class="ride-meta">
+                <div class="meta-item">
+                  <mat-icon>event</mat-icon>
+                  <span>{{ ride.date }}</span>
+                </div>
+                <div class="meta-item">
+                  <mat-icon>access_time</mat-icon>
+                  <span>{{ ride.time }}</span>
+                </div>
+                <div class="meta-item">
+                  <mat-icon>people</mat-icon>
+                  <span>{{ ride.seats }}</span>
+                </div>
+              </div>
+              <div class="ride-actions">
+                <button
+                  mat-flat-button
+                  color="primary"
+                  (click)="bookRide(ride)"
+                  [disabled]="createBookingMutation.isPending()"
+                >
+                  Book Ride
+                </button>
+              </div>
+            </div>
+          } @empty {
+            <div class="empty-state">
+              <p>No rides found.</p>
+            </div>
+          }
+        </div>
+
+        @if (total > 0) {
+          <div class="pagination">
+            <button mat-stroked-button (click)="setPage(page - 1)" [disabled]="page <= 1">
+              <mat-icon>chevron_left</mat-icon>
+              Previous
+            </button>
+            <div class="pagination-numbers">
+              @for (p of pageNumbers; track p) {
+                <button
+                  mat-stroked-button
+                  type="button"
+                  class="page-btn"
+                  [class.active]="p === page"
+                  (click)="setPage(p)"
+                >
+                  {{ p }}
+                </button>
+              }
+            </div>
+            <button mat-stroked-button (click)="setPage(page + 1)" [disabled]="page >= totalPages">
+              Next
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+        }
+      }
+    </div>
+  </main>
+</div>

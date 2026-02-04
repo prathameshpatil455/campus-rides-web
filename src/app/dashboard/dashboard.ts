@@ -4,8 +4,10 @@ import { RouterModule, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { useGetRides, Ride as BackendRide } from '../services/rides/get-rides';
+import { useGetMyRides } from '../services/rides/get-my-rides';
 import { AuthService } from '../services/auth/auth.service';
 import { inject } from '@angular/core';
+import { SidebarComponent } from '../components/sidebar/sidebar';
 
 interface StatCard {
   title: string;
@@ -17,6 +19,7 @@ interface StatCard {
 }
 
 interface ActiveRide {
+  id?: string;
   driverName: string;
   driverInitials: string;
   rating: number;
@@ -46,13 +49,14 @@ interface UserStat {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule],
+  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, SidebarComponent],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
 export class Dashboard {
   isDriverMode = true;
   ridesQuery = useGetRides();
+  myRidesQuery = useGetMyRides(() => ({ status: 'active' }));
 
   private authService = inject(AuthService);
   private platformId = inject(PLATFORM_ID);
@@ -65,51 +69,125 @@ export class Dashboard {
         fullName: 'Guest User',
         initials: 'GU',
         department: '',
-        id: ''
+        id: '',
       };
     }
     return {
       fullName: `${user.firstName} ${user.lastName}`,
       initials: (user.firstName[0] + user.lastName[0]).toUpperCase(),
       department: user.department,
-      id: user._id
+      id: user._id,
     };
   }
 
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/auth']);
+
+  private getDriverDisplayName(ride: BackendRide): string {
+    const r = ride as { driverName?: string; driverId?: { fullName?: string; firstName?: string; lastName?: string } };
+    if (r.driverName && r.driverName.trim()) return r.driverName.trim();
+    const d = r.driverId;
+    if (d && typeof d === 'object') {
+      if (d.fullName && String(d.fullName).trim()) return String(d.fullName).trim();
+      const first = d.firstName ?? '';
+      const last = d.lastName ?? '';
+      const name = [first, last].filter(Boolean).join(' ').trim();
+      if (name) return name;
+    }
+    return 'Unknown Driver';
+  }
+
+  private formatLocation(loc: unknown): string {
+    if (!loc || typeof loc !== 'object') return '—';
+    const o = loc as {
+      name?: string;
+      address?: string;
+      coordinates?: { lat?: number; lng?: number; latitude?: number; longitude?: number };
+    };
+    if (o.name && o.name.trim()) return o.name.trim();
+    if (o.address && o.address.trim()) return o.address.trim();
+    if (o.coordinates) {
+      const lat = o.coordinates.lat ?? o.coordinates.latitude;
+      const lng = o.coordinates.lng ?? o.coordinates.longitude;
+      if (lat != null && lng != null) return `${Number(lat).toFixed(4)}, ${Number(lng).toFixed(4)}`;
+    }
+    return '—';
+  }
+
+  private getRideDepartureTime(ride: BackendRide): Date {
+    const raw = ride.time ?? ride.date ?? (ride as { departureTime?: string; departureDate?: string; createdAt?: string }).departureTime
+      ?? (ride as { departureTime?: string; departureDate?: string; createdAt?: string }).departureDate
+      ?? (ride as { departureTime?: string; departureDate?: string; createdAt?: string }).createdAt;
+    const d = new Date(raw ?? 0);
+    return isNaN(d.getTime()) ? new Date(0) : d;
+  }
+
+  private isFutureRide(ride: BackendRide): boolean {
+    return this.getRideDepartureTime(ride).getTime() > Date.now();
+  }
+
+  private mapRide(ride: BackendRide) {
+    const rideId =
+      (ride as { _id?: string; id?: string })._id ?? (ride as { _id?: string; id?: string }).id;
+
+    const departureTime = this.getRideDepartureTime(ride);
+    const formattedDate = !isNaN(departureTime.getTime())
+      ? departureTime.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+      : '—';
+
+    let formattedTime = ride.time ?? (ride as { departureTime?: string }).departureTime ?? '—';
+    if (typeof formattedTime === 'string' && formattedTime.includes('T')) {
+      const timeDate = new Date(formattedTime);
+      if (!isNaN(timeDate.getTime())) {
+        formattedTime = timeDate.toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+        });
+      }
+    }
+
+    const seatsCount = ride.availableSeats ?? ride.totalSeats ?? (ride as { seats?: number }).seats ?? '?';
+    const driverName = this.getDriverDisplayName(ride);
+    const driverInitials = driverName !== 'Unknown Driver'
+      ? driverName.substring(0, 2).toUpperCase()
+      : 'UD';
+
+    const pickupLoc = (ride as { pickup?: unknown }).pickup ?? ride.from;
+    const destLoc = (ride as { destination?: unknown }).destination ?? ride.to;
+
+    return {
+      id: rideId ?? '',
+      driverName,
+      driverInitials,
+      rating: 5.0,
+      totalRides: 10,
+      pickup: this.formatLocation(pickupLoc),
+      destination: this.formatLocation(destLoc),
+      date: formattedDate,
+      time: formattedTime,
+      seats: `${seatsCount} seats`,
+      status: (ride.price === 0 ? 'free' : 'paid') as 'free' | 'paid',
+    };
   }
 
   get activeRides(): ActiveRide[] {
-    const rides = this.ridesQuery.data();
+    const rides = this.myRidesQuery.data() as BackendRide[] | undefined;
+    if (!rides) return [];
+    return rides.filter((ride) => this.isFutureRide(ride)).map((ride) => this.mapRide(ride));
+  }
+
+  get availableRides(): ActiveRide[] {
+    const rides = this.ridesQuery.data() as BackendRide[] | undefined;
     const user = this.currentUser;
-    if (!rides || !user.id) return [];
+
+    if (!rides) return [];
 
     return rides
-      .filter(ride => ride.driverId === user.id)
-      .map(ride => {
-        // Helper to Format Location
-        const formatLocation = (loc: any) => {
-          if (!loc) return 'Unknown';
-          if (loc.address) return loc.address;
-          if (loc.coordinates) return `${loc.coordinates.lat.toFixed(4)}, ${loc.coordinates.lng.toFixed(4)}`;
-          return 'Pinned Location';
-        };
-
-        return {
-          driverName: ride.driverName || 'Unknown Driver',
-          driverInitials: ride.driverName ? ride.driverName.substring(0, 2).toUpperCase() : 'UD',
-          rating: 5.0, // Mock data
-          totalRides: 10, // Mock data
-          pickup: formatLocation(ride.from),
-          destination: formatLocation(ride.to),
-          date: new Date(ride.date).toLocaleDateString(), // Format date
-          time: ride.time,
-          seats: `${ride.availableSeats}/${ride.totalSeats} seats`,
-          status: ride.price === 0 ? 'free' : 'paid'
-        };
-      });
+      .filter((ride) => {
+        const rideDriverId = typeof ride.driverId === 'object' ? ride.driverId._id : ride.driverId;
+        const isNotPoster = !user.id || rideDriverId !== user.id;
+        return isNotPoster && this.isFutureRide(ride);
+      })
+      .map((ride) => this.mapRide(ride));
   }
 
   get statCards(): StatCard[] {

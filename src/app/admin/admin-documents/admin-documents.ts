@@ -11,6 +11,7 @@ import { useGetCurrentUser } from '../../services/user/get-current-user';
 import { useGetPendingDocuments, PendingDocument } from '../../services/admin/get-pending-documents';
 import { useVerifyDocument } from '../../services/admin/verify-document';
 import { RejectDocumentDialog } from './reject-document-dialog';
+import { SidebarComponent } from '../../components/sidebar/sidebar';
 
 @Component({
   selector: 'app-admin-documents',
@@ -24,6 +25,7 @@ import { RejectDocumentDialog } from './reject-document-dialog';
     MatDialogModule,
     MatSnackBarModule,
     DatePipe,
+    SidebarComponent,
   ],
   templateUrl: './admin-documents.html',
   styleUrl: './admin-documents.css',
@@ -104,26 +106,4 @@ export class AdminDocuments {
     return labels[type] || type;
   }
 
-  get currentUser() {
-    const user = this.userQuery.data();
-    if (!user) {
-      return {
-        name: 'Loading...',
-        initials: '...',
-        email: '',
-        department: '',
-      };
-    }
-    return {
-      name: `${user.firstName} ${user.lastName}`,
-      initials: (user.firstName[0] + user.lastName[0]).toUpperCase(),
-      email: user.email,
-      department: user.department,
-    };
-  }
-
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/auth']);
-  }
 }
