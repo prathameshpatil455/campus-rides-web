@@ -1,57 +1,5 @@
 <div class="messages-page">
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <div class="logo">
-        <div class="logo-icon">
-          <mat-icon>directions_car</mat-icon>
-        </div>
-        <span class="logo-text">CampusRide</span>
-        <mat-icon class="collapse-icon">chevron_left</mat-icon>
-      </div>
-    </div>
-
-    <nav class="sidebar-nav">
-      <a routerLink="/dashboard" class="nav-item">
-        <mat-icon>dashboard</mat-icon>
-        <span>Dashboard</span>
-      </a>
-      <a routerLink="/all-rides" class="nav-item">
-        <mat-icon>list</mat-icon>
-        <span>All Rides</span>
-      </a>
-      <a routerLink="/post-ride" class="nav-item">
-        <mat-icon>add</mat-icon>
-        <span>Post Ride</span>
-      </a>
-      <a routerLink="/my-rides" class="nav-item">
-        <mat-icon>directions_car</mat-icon>
-        <span>My Rides</span>
-      </a>
-      <a routerLink="/history" class="nav-item">
-        <mat-icon>history</mat-icon>
-        <span>History</span>
-      </a>
-      <a routerLink="/messages" class="nav-item active">
-        <mat-icon>chat_bubble_outline</mat-icon>
-        <span>Messages</span>
-      </a>
-      <a routerLink="/profile" class="nav-item">
-        <mat-icon>person_outline</mat-icon>
-        <span>Profile</span>
-      </a>
-    </nav>
-
-    <div class="sidebar-footer">
-      <div class="user-profile">
-        <div class="user-avatar">{{ currentUser.initials }}</div>
-        <div class="user-info">
-          <div class="user-name">{{ currentUser.name }}</div>
-          <div class="user-department">{{ currentUser.department }}</div>
-        </div>
-        <mat-icon class="arrow-icon">chevron_right</mat-icon>
-      </div>
-    </div>
-  </aside>
+  <app-sidebar></app-sidebar>
 
   <div class="messages-content">
     <div class="conversations-panel">

@@ -17,6 +17,7 @@ import { useUploadDocument } from '../services/user/upload-document';
 import { useUpdateUser } from '../services/user/update-user';
 import { ApiService } from '../services/api';
 import { useGetDocument } from '../services/user/get-document';
+import { SidebarComponent } from '../components/sidebar/sidebar';
 
 interface VerificationItem {
   id: string;
@@ -51,6 +52,7 @@ interface NotificationPreference {
     MatProgressBarModule,
     MatDialogModule,
     MatSnackBarModule,
+    SidebarComponent,
   ],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
@@ -422,8 +424,4 @@ export class Profile {
     });
   }
 
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/auth']);
-  }
 }

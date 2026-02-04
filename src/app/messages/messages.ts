@@ -23,6 +23,7 @@ import { MessageResponse } from '../services/messages/get-messages';
 import { useSendMessage } from '../services/messages/send-message';
 import { WebSocketService, WebSocketMessage } from '../services/messages/websocket.service';
 import { ApiService } from '../services/api';
+import { SidebarComponent } from '../components/sidebar/sidebar';
 
 interface Conversation {
   id: string;
@@ -69,6 +70,7 @@ interface ActiveChat {
     MatButtonModule,
     MatInputModule,
     MatFormFieldModule,
+    SidebarComponent,
   ],
   templateUrl: './messages.html',
   styleUrl: './messages.css',
@@ -354,14 +356,6 @@ export class Messages implements OnDestroy, AfterViewChecked {
 
   quickReplies = ['On my way!', "I'll be there in 5 mins", 'Thanks!', 'See you soon'];
 
-  get currentUser() {
-    const user = this.authService.getUserData();
-    return {
-      name: getFullName(user?.firstName, user?.lastName),
-      initials: getInitials(user?.firstName, user?.lastName),
-      department: user?.department || 'N/A',
-    };
-  }
 
   filteredConversations = computed(() => {
     const query = this.searchQuery().toLowerCase();
@@ -708,8 +702,4 @@ export class Messages implements OnDestroy, AfterViewChecked {
     this.isDriverMode = !this.isDriverMode;
   }
 
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/auth']);
-  }
 }

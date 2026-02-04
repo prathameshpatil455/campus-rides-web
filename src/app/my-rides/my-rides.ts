@@ -12,6 +12,7 @@ import { useDeleteRide } from '../services/rides/delete-ride';
 import { AuthService } from '../services/auth/auth.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { inject } from '@angular/core';
+import { SidebarComponent } from '../components/sidebar/sidebar';
 
 type RideStatus = 'active' | 'completed' | 'cancelled';
 
@@ -46,6 +47,7 @@ interface Ride {
     MatChipsModule,
     MatMenuModule,
     MatSnackBarModule,
+    SidebarComponent,
   ],
   templateUrl: './my-rides.html',
   styleUrl: './my-rides.css',
@@ -60,22 +62,6 @@ export class MyRides {
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
 
-  get currentUser() {
-    const user = this.authService.getUserData();
-    if (!user) {
-      return {
-        name: 'Guest User',
-        initials: 'GU',
-        department: '',
-      };
-    }
-    return {
-      name: `${user.firstName} ${user.lastName}`,
-      initials: (user.firstName[0] + user.lastName[0]).toUpperCase(),
-      department: user.department,
-      id: user._id
-    };
-  }
 
   private formatLocation(loc: unknown): string {
     if (!loc || typeof loc !== 'object') return 'Unknown';

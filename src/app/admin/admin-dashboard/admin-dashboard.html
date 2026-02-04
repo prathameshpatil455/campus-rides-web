@@ -1,45 +1,5 @@
 <div class="admin-dashboard-page">
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <div class="logo">
-        <div class="logo-icon">
-          <mat-icon>directions_car</mat-icon>
-        </div>
-        <span class="logo-text">CampusRide</span>
-        <mat-icon class="collapse-icon">chevron_left</mat-icon>
-      </div>
-    </div>
-
-    <nav class="sidebar-nav">
-      <a routerLink="/admin/dashboard" class="nav-item active">
-        <mat-icon>dashboard</mat-icon>
-        <span>Dashboard</span>
-      </a>
-      <a routerLink="/admin/documents" class="nav-item">
-        <mat-icon>description</mat-icon>
-        <span>Document Verification</span>
-      </a>
-      <a routerLink="/admin/users" class="nav-item">
-        <mat-icon>people</mat-icon>
-        <span>User Management</span>
-      </a>
-      <a routerLink="/admin/rides" class="nav-item">
-        <mat-icon>directions_car</mat-icon>
-        <span>Ride Management</span>
-      </a>
-    </nav>
-
-    <div class="sidebar-footer">
-      <div class="user-profile">
-        <div class="user-avatar">{{ currentUser.initials }}</div>
-        <div class="user-info">
-          <div class="user-name">{{ currentUser.name }}</div>
-          <div class="user-department">{{ currentUser.department }}</div>
-        </div>
-        <mat-icon class="logout-icon" (click)="logout()">logout</mat-icon>
-      </div>
-    </div>
-  </aside>
+  <app-sidebar mode="admin"></app-sidebar>
 
   <main class="dashboard-content">
     <div class="content-wrapper">

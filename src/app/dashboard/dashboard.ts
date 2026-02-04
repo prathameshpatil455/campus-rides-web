@@ -7,6 +7,7 @@ import { useGetRides, Ride as BackendRide } from '../services/rides/get-rides';
 import { useGetMyRides } from '../services/rides/get-my-rides';
 import { AuthService } from '../services/auth/auth.service';
 import { inject } from '@angular/core';
+import { SidebarComponent } from '../components/sidebar/sidebar';
 
 interface StatCard {
   title: string;
@@ -48,7 +49,7 @@ interface UserStat {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule],
+  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, SidebarComponent],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -79,10 +80,6 @@ export class Dashboard {
     };
   }
 
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/auth']);
-  }
 
   private getDriverDisplayName(ride: BackendRide): string {
     const r = ride as { driverName?: string; driverId?: { fullName?: string; firstName?: string; lastName?: string } };

@@ -15,6 +15,7 @@ import { LocationSelector } from '../components/location-selector/location-selec
 import { Location } from '../types/location';
 import { useCreateRide } from '../services/rides/create-ride';
 import { AuthService } from '../services/auth/auth.service';
+import { SidebarComponent } from '../components/sidebar/sidebar';
 import { getErrorMessage } from '../utils/error-handler';
 
 @Component({
@@ -34,6 +35,7 @@ import { getErrorMessage } from '../utils/error-handler';
     MatNativeDateModule,
     MatSnackBarModule,
     LocationSelector,
+    SidebarComponent,
   ],
   templateUrl: './post-ride.html',
   styleUrl: './post-ride.css',
@@ -43,21 +45,6 @@ export class PostRide {
   private snackBar = inject(MatSnackBar);
   isDriverMode = true;
 
-  get currentUser() {
-    const user = this.authService.getUserData();
-    if (!user) {
-      return {
-        name: 'Guest User',
-        initials: 'GU',
-        department: '',
-      };
-    }
-    return {
-      name: `${user.firstName} ${user.lastName}`,
-      initials: (user.firstName[0] + user.lastName[0]).toUpperCase(),
-      department: user.department,
-    };
-  }
 
   postRideForm: FormGroup;
 

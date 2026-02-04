@@ -7,6 +7,7 @@ import { useGetRidesPaginated, Ride as BackendRide } from '../services/rides/get
 import { useCreateBooking } from '../services/bookings/create-booking';
 import { AuthService } from '../services/auth/auth.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { SidebarComponent } from '../components/sidebar/sidebar';
 
 interface DisplayRide {
   id: string;
@@ -33,6 +34,7 @@ const PAGE_SIZE = 10;
     MatIconModule,
     MatButtonModule,
     MatSnackBarModule,
+    SidebarComponent,
   ],
   templateUrl: './all-rides.html',
   styleUrl: './all-rides.css',
@@ -51,18 +53,6 @@ export class AllRides {
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
 
-  get currentUser() {
-    const user = this.authService.getUserData();
-    if (!user) {
-      return { fullName: 'Guest User', initials: 'GU', department: '', id: '' };
-    }
-    return {
-      fullName: `${user.firstName} ${user.lastName}`,
-      initials: (user.firstName[0] + user.lastName[0]).toUpperCase(),
-      department: user.department,
-      id: user._id,
-    };
-  }
 
   get paginated() {
     return this.ridesQuery.data();
@@ -96,10 +86,6 @@ export class AllRides {
     return this.ridesQuery.isLoading();
   }
 
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/auth']);
-  }
 
   private getDriverDisplayName(ride: BackendRide): string {
     const r = ride as { driverName?: string; driverId?: { fullName?: string; firstName?: string; lastName?: string } };
