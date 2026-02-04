@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { useGetRides, Ride as BackendRide } from '../services/rides/get-rides';
 import { useGetMyRides } from '../services/rides/get-my-rides';
+import { useGetCurrentUser } from '../services/user/get-current-user';
 import { AuthService } from '../services/auth/auth.service';
 import { inject } from '@angular/core';
 import { SidebarComponent } from '../components/sidebar/sidebar';
@@ -57,6 +58,8 @@ export class Dashboard {
   isDriverMode = true;
   ridesQuery = useGetRides();
   myRidesQuery = useGetMyRides(() => ({ status: 'active' }));
+  myRidesAllQuery = useGetMyRides(() => ({}));
+  currentUserQuery = useGetCurrentUser();
 
   private authService = inject(AuthService);
   private platformId = inject(PLATFORM_ID);
@@ -80,9 +83,11 @@ export class Dashboard {
     };
   }
 
-
   private getDriverDisplayName(ride: BackendRide): string {
-    const r = ride as { driverName?: string; driverId?: { fullName?: string; firstName?: string; lastName?: string } };
+    const r = ride as {
+      driverName?: string;
+      driverId?: { fullName?: string; firstName?: string; lastName?: string };
+    };
     if (r.driverName && r.driverName.trim()) return r.driverName.trim();
     const d = r.driverId;
     if (d && typeof d === 'object') {
@@ -113,9 +118,14 @@ export class Dashboard {
   }
 
   private getRideDepartureTime(ride: BackendRide): Date {
-    const raw = ride.time ?? ride.date ?? (ride as { departureTime?: string; departureDate?: string; createdAt?: string }).departureTime
-      ?? (ride as { departureTime?: string; departureDate?: string; createdAt?: string }).departureDate
-      ?? (ride as { departureTime?: string; departureDate?: string; createdAt?: string }).createdAt;
+    const raw =
+      ride.time ??
+      ride.date ??
+      (ride as { departureTime?: string; departureDate?: string; createdAt?: string })
+        .departureTime ??
+      (ride as { departureTime?: string; departureDate?: string; createdAt?: string })
+        .departureDate ??
+      (ride as { departureTime?: string; departureDate?: string; createdAt?: string }).createdAt;
     const d = new Date(raw ?? 0);
     return isNaN(d.getTime()) ? new Date(0) : d;
   }
@@ -130,7 +140,11 @@ export class Dashboard {
 
     const departureTime = this.getRideDepartureTime(ride);
     const formattedDate = !isNaN(departureTime.getTime())
-      ? departureTime.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+      ? departureTime.toLocaleDateString('en-US', {
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric',
+        })
       : '—';
 
     let formattedTime = ride.time ?? (ride as { departureTime?: string }).departureTime ?? '—';
@@ -145,11 +159,11 @@ export class Dashboard {
       }
     }
 
-    const seatsCount = ride.availableSeats ?? ride.totalSeats ?? (ride as { seats?: number }).seats ?? '?';
+    const seatsCount =
+      ride.availableSeats ?? ride.totalSeats ?? (ride as { seats?: number }).seats ?? '?';
     const driverName = this.getDriverDisplayName(ride);
-    const driverInitials = driverName !== 'Unknown Driver'
-      ? driverName.substring(0, 2).toUpperCase()
-      : 'UD';
+    const driverInitials =
+      driverName !== 'Unknown Driver' ? driverName.substring(0, 2).toUpperCase() : 'UD';
 
     const pickupLoc = (ride as { pickup?: unknown }).pickup ?? ride.from;
     const destLoc = (ride as { destination?: unknown }).destination ?? ride.to;
@@ -191,55 +205,48 @@ export class Dashboard {
   }
 
   get statCards(): StatCard[] {
-    const ridesCount = this.activeRides.length;
+    const activeCount = this.activeRides.length;
+    const allMyRides = (this.myRidesAllQuery.data() as BackendRide[] | undefined) ?? [];
+    const totalCount = allMyRides.length;
     return [
       {
         title: 'Active Rides',
-        value: ridesCount.toString(),
+        value: activeCount.toString(),
         subtitle: 'Currently scheduled',
         icon: 'directions_car',
         variant: 'primary',
       },
       {
         title: 'Total Rides',
-        value: '47',
+        value: totalCount.toString(),
         subtitle: 'Rides offered',
         icon: 'show_chart',
         variant: 'default',
-        trend: '↑12% vs last week',
-      },
-      {
-        title: 'Rating',
-        value: '4.8',
-        subtitle: 'Out of 5.0',
-        icon: 'people',
-        variant: 'default',
-      },
-      {
-        title: 'Pending Requests',
-        value: '1',
-        subtitle: 'Awaiting response',
-        icon: 'schedule',
-        variant: 'warning',
       },
     ];
   }
 
-  bookingRequests: BookingRequest[] = [
-    {
-      userName: 'Emily Davis',
-      userInitials: 'ED',
-      seats: 1,
-      status: 'pending',
-      route: 'Hostel A → Computer Science Block',
-    },
-  ];
+  get bookingRequests(): BookingRequest[] {
+    return this._bookingRequests;
+  }
 
-  userStats: UserStat[] = [
-    { label: 'Department', value: 'Computer Science' },
-    { label: 'Year', value: '3rd Year' },
-    { label: 'Member since', value: 'Aug 2023' },
-  ];
+  private _bookingRequests: BookingRequest[] = [];
+
+  get userStats(): UserStat[] {
+    const user = this.currentUserQuery.data() ?? this.authService.getUserData();
+    if (!user) return [];
+    const items: UserStat[] = [];
+    if (user.department) items.push({ label: 'Department', value: user.department });
+    if (user.year) items.push({ label: 'Year', value: user.year });
+    if (user.createdAt) {
+      const d = new Date(user.createdAt);
+      const formatted = isNaN(d.getTime())
+        ? user.createdAt
+        : d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+      items.push({ label: 'Member since', value: formatted });
+    }
+    return items;
+  }
 
   toggleDriverMode() {
     this.isDriverMode = !this.isDriverMode;

@@ -38,3 +38,35 @@ body {
   --mdc-outlined-button-label-text-color: #0f766e;
   --mdc-outlined-button-outline-color: #0f766e;
 }
+
+.mat-mdc-menu-panel .emoji-picker-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  max-width: 320px;
+}
+
+.mat-mdc-menu-panel .emoji-picker-btn,
+.mat-mdc-menu-panel .emoji-picker-panel button {
+  width: 3rem !important;
+  height: 3rem !important;
+  min-width: 3rem !important;
+  padding: 0 !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  border-radius: 8px;
+  background: none !important;
+  font-size: 1.75rem !important;
+  cursor: pointer;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.mat-mdc-menu-panel .emoji-picker-btn:hover,
+.mat-mdc-menu-panel .emoji-picker-panel button:hover {
+  background-color: #f1f5f9 !important;
+}

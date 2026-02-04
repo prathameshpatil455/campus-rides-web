@@ -57,7 +57,9 @@
                 <div class="ride-availability">
                   <mat-icon>people</mat-icon>
                   <span>{{ ride.availableSeats }} available</span>
-                  @if (ride.isFree) {
+                  @if (ride.totalSeats > 0) {
+                  <span class="seats-total">(of {{ ride.totalSeats }} total)</span>
+                  } @if (ride.isFree) {
                   <span class="free-badge">Free</span>
                   }
                 </div>
@@ -68,9 +70,24 @@
                   </div>
                   <div class="passengers-avatars">
                     @for (passenger of ride.passengers; track passenger.initials) {
-                    <div class="passenger-avatar" [title]="passenger.name">{{ passenger.initials }}</div>
+                    <div class="passenger-avatar" [title]="passenger.name">
+                      {{ passenger.initials }}
+                    </div>
                     }
                   </div>
+                </div>
+
+                <div class="ride-card-actions">
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    class="complete-ride-btn"
+                    (click)="completeRide(ride)"
+                    [disabled]="completeRideMutation.isPending()"
+                  >
+                    <mat-icon>check_circle</mat-icon>
+                    Complete Ride
+                  </button>
                 </div>
               </div>
 
@@ -83,14 +100,6 @@
                   <mat-icon>more_vert</mat-icon>
                 </button>
                 <mat-menu #rideMenu="matMenu">
-                  <button mat-menu-item (click)="viewDetails(ride)">
-                    <mat-icon>visibility</mat-icon>
-                    <span>View Details</span>
-                  </button>
-                  <button mat-menu-item (click)="editRide(ride)">
-                    <mat-icon>edit</mat-icon>
-                    <span>Edit Ride</span>
-                  </button>
                   <button mat-menu-item (click)="deleteRide(ride)" class="danger-action">
                     <mat-icon>delete</mat-icon>
                     <span>Delete Ride</span>
@@ -216,4 +225,3 @@
     </div>
   </main>
 </div>
-
