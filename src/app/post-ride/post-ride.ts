@@ -7,7 +7,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -30,7 +29,6 @@ import { getErrorMessage } from '../utils/error-handler';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatSlideToggleModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatSnackBarModule,
@@ -45,10 +43,7 @@ export class PostRide {
   private snackBar = inject(MatSnackBar);
   isDriverMode = true;
 
-
   postRideForm: FormGroup;
-
-
 
   availableSeats = [
     { value: '1', label: '1 seat' },
@@ -61,22 +56,15 @@ export class PostRide {
     this.postRideForm = this.fb.group({
       from: [null, [Validators.required]],
       to: [null, [Validators.required]],
-
       date: ['', [Validators.required]],
       departureTime: ['', [Validators.required]],
       availableSeats: ['', [Validators.required]],
-      isFreeRide: [true],
       notes: [''],
     });
   }
 
   toggleDriverMode() {
     this.isDriverMode = !this.isDriverMode;
-  }
-
-  toggleFreeRide() {
-    const currentValue = this.postRideForm.get('isFreeRide')?.value;
-    this.postRideForm.patchValue({ isFreeRide: !currentValue });
   }
 
   onCancel() {
@@ -86,7 +74,10 @@ export class PostRide {
   onLocationChange(field: string, location: Location) {
     console.log(`PostRide: onLocationChange for ${field}`, location);
     this.postRideForm.patchValue({ [field]: location });
-    console.log(`PostRide: Form value for ${field} updated to`, this.postRideForm.get(field)?.value);
+    console.log(
+      `PostRide: Form value for ${field} updated to`,
+      this.postRideForm.get(field)?.value
+    );
   }
 
   createRideMutation = useCreateRide();
@@ -95,14 +86,14 @@ export class PostRide {
     event.preventDefault();
     if (this.postRideForm.valid) {
       const formValue = this.postRideForm.value;
-      
+
       const rideData = {
         from: formValue.from,
         to: formValue.to,
-        date: formValue.date ? new Date(formValue.date).toISOString() : '', 
+        date: formValue.date ? new Date(formValue.date).toISOString() : '',
         time: formValue.departureTime,
         totalSeats: parseInt(formValue.availableSeats),
-        price: formValue.isFreeRide ? 0 : 50 
+        price: 0,
       };
 
       console.log('Submitting ride data:', rideData);
@@ -118,17 +109,17 @@ export class PostRide {
         },
         onError: (error: any) => {
           console.error('Failed to create ride:', error);
-          
+
           let errorMessage = getErrorMessage(error);
           if (error.error && typeof error.error === 'object') {
-             // Try to extract more specific validation errors if available
-             if (error.error.message) {
-                 errorMessage = error.error.message;
-             }
-             // Sometimes validation errors come as a list or nested object
-             if (error.error.errors) {
-                 errorMessage += ` ${JSON.stringify(error.error.errors)}`;
-             }
+            // Try to extract more specific validation errors if available
+            if (error.error.message) {
+              errorMessage = error.error.message;
+            }
+            // Sometimes validation errors come as a list or nested object
+            if (error.error.errors) {
+              errorMessage += ` ${JSON.stringify(error.error.errors)}`;
+            }
           }
 
           this.snackBar.open(`Error: ${errorMessage}`, 'Close', {
@@ -136,7 +127,7 @@ export class PostRide {
             horizontalPosition: 'right',
             verticalPosition: 'top',
           });
-        }
+        },
       });
     } else {
       console.warn('Post Ride Form is invalid:', this.postRideForm.controls);

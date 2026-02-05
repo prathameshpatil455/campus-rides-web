@@ -53,118 +53,121 @@
       <div class="dashboard-grid">
         <div class="dashboard-column main-column">
           @if (isDriverMode) {
-            <div class="section-header">
-              <h2 class="section-title">Your Active Rides</h2>
-              <a routerLink="/my-rides" class="view-all-link">View All →</a>
-            </div>
+          <div class="section-header">
+            <h2 class="section-title">Your Active Rides</h2>
+            <a routerLink="/my-rides" class="view-all-link">View All →</a>
+          </div>
 
-            <div class="rides-list">
-              @for (ride of activeRides; track ride.driverName) {
-              <div class="ride-card">
-                <div class="ride-header">
-                  <div class="ride-driver">
-                    <div class="driver-avatar">{{ ride.driverInitials }}</div>
-                    <div class="driver-info">
-                      <div class="driver-name">{{ ride.driverName }}</div>
-                      <div class="driver-rating">
-                        ★ {{ ride.rating }} • {{ ride.totalRides }} rides
-                      </div>
+          <div class="rides-list">
+            @for (ride of activeRides; track ride.driverName) {
+            <div class="ride-card">
+              <div class="ride-header">
+                <div class="ride-driver">
+                  <div class="driver-avatar">{{ ride.driverInitials }}</div>
+                  <div class="driver-info">
+                    <div class="driver-name">{{ ride.driverName }}</div>
+                    <div class="driver-rating">
+                      ★ {{ ride.rating }} • {{ ride.totalRides }} rides
                     </div>
                   </div>
-                  <span class="ride-status" [class.free]="ride.status === 'free'">
-                    {{ ride.status === 'free' ? 'Free' : 'Paid' }}
-                  </span>
                 </div>
-                <div class="ride-details">
-                  <div class="ride-location">
-                    <mat-icon class="location-icon pickup">place</mat-icon>
-                    <span>Pickup: {{ ride.pickup }}</span>
-                  </div>
-                  <div class="ride-location">
-                    <mat-icon class="location-icon destination">place</mat-icon>
-                    <span>Destination: {{ ride.destination }}</span>
-                  </div>
+                <span class="ride-status" [class.free]="ride.status === 'free'">
+                  {{ ride.status === 'free' ? 'Free' : 'Paid' }}
+                </span>
+              </div>
+              <div class="ride-details">
+                <div class="ride-location">
+                  <mat-icon class="location-icon pickup">place</mat-icon>
+                  <span>Pickup: {{ ride.pickup }}</span>
                 </div>
-                <div class="ride-meta">
-                  <div class="meta-item">
-                    <mat-icon>event</mat-icon>
-                    <span>{{ ride.date }}</span>
-                  </div>
-                  <div class="meta-item">
-                    <mat-icon>access_time</mat-icon>
-                    <span>{{ ride.time }}</span>
-                  </div>
-                  <div class="meta-item">
-                    <mat-icon>people</mat-icon>
-                    <span>{{ ride.seats }}</span>
-                  </div>
+                <div class="ride-location">
+                  <mat-icon class="location-icon destination">place</mat-icon>
+                  <span>Destination: {{ ride.destination }}</span>
                 </div>
               </div>
-              } @empty {
-                <div class="empty-state">
-                  <p>No active rides found.</p>
+              <div class="ride-meta">
+                <div class="meta-item">
+                  <mat-icon>event</mat-icon>
+                  <span>{{ ride.date }}</span>
                 </div>
-              }
+                <div class="meta-item">
+                  <mat-icon>access_time</mat-icon>
+                  <span>{{ ride.time }}</span>
+                </div>
+                <div class="meta-item">
+                  <mat-icon>people</mat-icon>
+                  <span>{{ ride.seats }}</span>
+                </div>
+              </div>
             </div>
+            } @empty {
+            <div class="empty-state">
+              <p>No active rides found.</p>
+            </div>
+            }
+          </div>
           } @else {
-            <div class="section-header">
-              <h2 class="section-title">Available Rides</h2>
-              <a routerLink="/all-rides" class="view-all-link">View All →</a>
-            </div>
+          <div class="section-header">
+            <h2 class="section-title">Available Rides</h2>
+            <a routerLink="/all-rides" class="view-all-link">View All →</a>
+          </div>
 
-            <div class="rides-list">
-              @for (ride of availableRides; track ride.id) {
-              <div class="ride-card">
-                <div class="ride-header">
-                  <div class="ride-driver">
-                    <div class="driver-avatar">{{ ride.driverInitials }}</div>
-                    <div class="driver-info">
-                      <div class="driver-name">{{ ride.driverName }}</div>
-                      <div class="driver-rating">
-                        ★ {{ ride.rating }} • {{ ride.totalRides }} rides
-                      </div>
+          <div class="rides-list">
+            @for (ride of availableRides; track ride.id) {
+            <div class="ride-card">
+              <div class="ride-header">
+                <div class="ride-driver">
+                  <div class="driver-avatar">{{ ride.driverInitials }}</div>
+                  <div class="driver-info">
+                    <div class="driver-name">{{ ride.driverName }}</div>
+                    <div class="driver-rating">
+                      ★ {{ ride.rating }} • {{ ride.totalRides }} rides
                     </div>
                   </div>
-                  <span class="ride-status" [class.free]="ride.status === 'free'">
-                    {{ ride.status === 'free' ? 'Free' : 'Paid' }}
-                  </span>
                 </div>
-                <!-- Reuse same card layout -->
-                <div class="ride-details">
-                  <div class="ride-location">
-                    <mat-icon class="location-icon pickup">place</mat-icon>
-                    <span>Pickup: {{ ride.pickup }}</span>
-                  </div>
-                  <div class="ride-location">
-                    <mat-icon class="location-icon destination">place</mat-icon>
-                    <span>Destination: {{ ride.destination }}</span>
-                  </div>
+                <span class="ride-status" [class.free]="ride.status === 'free'">
+                  {{ ride.status === 'free' ? 'Free' : 'Paid' }}
+                </span>
+              </div>
+              <!-- Reuse same card layout -->
+              <div class="ride-details">
+                <div class="ride-location">
+                  <mat-icon class="location-icon pickup">place</mat-icon>
+                  <span>Pickup: {{ ride.pickup }}</span>
                 </div>
-                <div class="ride-meta">
-                  <div class="meta-item">
-                    <mat-icon>event</mat-icon>
-                    <span>{{ ride.date }}</span>
-                  </div>
-                  <div class="meta-item">
-                    <mat-icon>access_time</mat-icon>
-                    <span>{{ ride.time }}</span>
-                  </div>
-                  <div class="meta-item">
-                    <mat-icon>people</mat-icon>
-                    <span>{{ ride.seats }}</span>
-                  </div>
-                </div>
-                <!-- Add book button for rider mode -->
-                <div class="ride-actions" style="margin-top: 12px; border-top: 1px solid #eee; padding-top: 12px;">
-                  <button mat-flat-button color="primary" style="width: 100%">Book Ride</button>
+                <div class="ride-location">
+                  <mat-icon class="location-icon destination">place</mat-icon>
+                  <span>Destination: {{ ride.destination }}</span>
                 </div>
               </div>
-              } @empty {
-                <div class="empty-state">
-                  <p>No rides available right now.</p>
+              <div class="ride-meta">
+                <div class="meta-item">
+                  <mat-icon>event</mat-icon>
+                  <span>{{ ride.date }}</span>
                 </div>
-              }
+                <div class="meta-item">
+                  <mat-icon>access_time</mat-icon>
+                  <span>{{ ride.time }}</span>
+                </div>
+                <div class="meta-item">
+                  <mat-icon>people</mat-icon>
+                  <span>{{ ride.seats }}</span>
+                </div>
+              </div>
+              <!-- Add book button for rider mode -->
+              <div
+                class="ride-actions"
+                style="margin-top: 12px; border-top: 1px solid #eee; padding-top: 12px"
+              >
+                <button mat-flat-button color="primary" style="width: 100%">Book Ride</button>
+              </div>
             </div>
+            } @empty {
+            <div class="empty-state">
+              <p>No rides available right now.</p>
+            </div>
+            }
+          </div>
           }
         </div>
 
@@ -206,6 +209,10 @@
                 </button>
               </div>
             </div>
+            } @empty {
+            <div class="empty-state">
+              <p>No pending requests.</p>
+            </div>
             }
           </div>
 
@@ -216,6 +223,10 @@
               <div class="stat-item">
                 <span class="stat-label">{{ stat.label }}</span>
                 <span class="stat-value-small">{{ stat.value }}</span>
+              </div>
+              } @empty {
+              <div class="empty-state">
+                <p>No stats available.</p>
               </div>
               }
             </div>

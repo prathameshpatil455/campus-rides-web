@@ -16,8 +16,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { AuthService } from '../services/auth/auth.service';
 import { getInitials, getFullName } from '../utils/name.utils';
+import { formatMessageContent as formatMessageContentUtil } from '../utils/format-message-content';
 import { useGetConversations, ConversationResponse } from '../services/messages/get-conversations';
 import { MessageResponse } from '../services/messages/get-messages';
 import { useSendMessage } from '../services/messages/send-message';
@@ -70,6 +72,7 @@ interface ActiveChat {
     MatButtonModule,
     MatInputModule,
     MatFormFieldModule,
+    MatMenuModule,
     SidebarComponent,
   ],
   templateUrl: './messages.html',
@@ -78,6 +81,9 @@ interface ActiveChat {
 export class Messages implements OnDestroy, AfterViewChecked {
   @ViewChild('chatMessagesContainer', { static: false })
   chatMessagesContainer!: ElementRef<HTMLDivElement>;
+
+  @ViewChild('emojiTrigger', { static: false })
+  emojiTrigger!: MatMenuTrigger;
 
   private scrollTimeoutId?: number;
   private authService = inject(AuthService);
@@ -356,6 +362,38 @@ export class Messages implements OnDestroy, AfterViewChecked {
 
   quickReplies = ['On my way!', "I'll be there in 5 mins", 'Thanks!', 'See you soon'];
 
+  emojiList = [
+    '😀',
+    '😃',
+    '😄',
+    '😁',
+    '😅',
+    '😂',
+    '🙂',
+    '🙃',
+    '😉',
+    '😊',
+    '😋',
+    '😎',
+    '😍',
+    '🥰',
+    '😘',
+    '👍',
+    '👋',
+    '🙌',
+    '✌️',
+    '❤️',
+    '🎉',
+    '✅',
+    '❌',
+    '🙏',
+    '😢',
+    '😭',
+    '😤',
+    '🤔',
+    '😴',
+    '👍',
+  ];
 
   filteredConversations = computed(() => {
     const query = this.searchQuery().toLowerCase();
@@ -698,8 +736,14 @@ export class Messages implements OnDestroy, AfterViewChecked {
     this.sendMessage();
   }
 
+  insertEmoji(emoji: string) {
+    this.messageInput = (this.messageInput || '') + emoji;
+    this.emojiTrigger?.closeMenu();
+  }
+
   toggleDriverMode() {
     this.isDriverMode = !this.isDriverMode;
   }
 
+  formatMessageContent = formatMessageContentUtil;
 }

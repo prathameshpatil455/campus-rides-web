@@ -41,6 +41,10 @@
   gap: 1.5rem;
 }
 
+:host ::ng-deep .mat-mdc-form-field-required-marker {
+  display: none !important;
+}
+
 .form-section-card {
   background-color: white;
   border-radius: 12px;
@@ -87,47 +91,6 @@
 
 .half-width {
   width: 100%;
-}
-
-.free-ride-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  background-color: #f8fafc;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-}
-
-.free-ride-info {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.free-ride-icon {
-  font-size: 32px;
-  width: 32px;
-  height: 32px;
-  color: #10b981;
-}
-
-.free-ride-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #1e293b;
-  margin: 0 0 0.25rem;
-}
-
-.free-ride-description {
-  font-size: 0.875rem;
-  color: #64748b;
-  margin: 0;
-}
-
-::ng-deep .mat-mdc-slide-toggle {
-  --mdc-switch-selected-handle-color: #14b8a6;
-  --mdc-switch-selected-track-color: #14b8a6;
 }
 
 .form-actions {
@@ -194,15 +157,4 @@
   }
 }
 
-@media (max-width: 480px) {
-  .free-ride-section {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .free-ride-info {
-    width: 100%;
-  }
-}
 

@@ -16,16 +16,22 @@
           </div>
           <div class="card-content">
             <div class="location-group">
-              <app-location-selector label=" Pickup Location " (locationChange)="onLocationChange('from', $event)"></app-location-selector>
+              <app-location-selector
+                label=" Pickup Location "
+                (locationChange)="onLocationChange('from', $event)"
+              ></app-location-selector>
               @if (postRideForm.get('from')?.invalid && postRideForm.get('from')?.touched) {
-                <mat-error>Pickup location is required</mat-error>
+              <mat-error>Pickup location is required</mat-error>
               }
             </div>
 
             <div class="location-group">
-              <app-location-selector label=" Destination " (locationChange)="onLocationChange('to', $event)"></app-location-selector>
+              <app-location-selector
+                label=" Destination "
+                (locationChange)="onLocationChange('to', $event)"
+              ></app-location-selector>
               @if (postRideForm.get('to')?.invalid && postRideForm.get('to')?.touched) {
-                <mat-error>Destination is required</mat-error>
+              <mat-error>Destination is required</mat-error>
               }
             </div>
           </div>
@@ -39,8 +45,13 @@
           <div class="card-content">
             <div class="form-row">
               <mat-form-field appearance="outline" class="half-width" [hideRequiredMarker]="true">
-                <mat-label>*Date*</mat-label>
-                <input matInput [matDatepicker]="picker" formControlName="date" placeholder="dd-mm-yyyy" />
+                <mat-label>Date</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="picker"
+                  formControlName="date"
+                  placeholder="dd-mm-yyyy"
+                />
                 <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-datepicker #picker></mat-datepicker>
                 @if (postRideForm.get('date')?.invalid && postRideForm.get('date')?.touched) {
@@ -49,9 +60,17 @@
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="half-width" [hideRequiredMarker]="true">
-                <mat-label>*Departure Time*</mat-label>
-                <input matInput #timePicker formControlName="departureTime" placeholder="--:--" type="time" />
-                <mat-icon matSuffix (click)="timePicker.showPicker()" style="cursor: pointer">schedule</mat-icon>
+                <mat-label>Departure Time</mat-label>
+                <input
+                  matInput
+                  #timePicker
+                  formControlName="departureTime"
+                  placeholder="--:--"
+                  type="time"
+                />
+                <mat-icon matSuffix (click)="timePicker.showPicker()" style="cursor: pointer"
+                  >schedule</mat-icon
+                >
                 @if (postRideForm.get('departureTime')?.invalid &&
                 postRideForm.get('departureTime')?.touched) {
                 <mat-error>Departure time is required</mat-error>
@@ -64,11 +83,11 @@
         <div class="form-section-card">
           <div class="card-header">
             <mat-icon>people</mat-icon>
-            <h3 class="card-title">Seats & Pricing</h3>
+            <h3 class="card-title">Seats</h3>
           </div>
           <div class="card-content">
             <mat-form-field appearance="outline" class="full-width" [hideRequiredMarker]="true">
-              <mat-label>*Available Seats*</mat-label>
+              <mat-label>Available Seats</mat-label>
               <mat-select formControlName="availableSeats" placeholder="Select seats">
                 @for (seat of availableSeats; track seat.value) {
                 <mat-option [value]="seat.value">{{ seat.label }}</mat-option>
@@ -79,17 +98,6 @@
               <mat-error>Available seats is required</mat-error>
               }
             </mat-form-field>
-
-            <div class="free-ride-section">
-              <div class="free-ride-info">
-                <mat-icon class="free-ride-icon">attach_money</mat-icon>
-                <div>
-                  <h4 class="free-ride-title">Free Ride</h4>
-                  <p class="free-ride-description">Offer this ride for free</p>
-                </div>
-              </div>
-              <mat-slide-toggle formControlName="isFreeRide" color="primary"></mat-slide-toggle>
-            </div>
           </div>
         </div>
 
@@ -115,13 +123,7 @@
           <button mat-stroked-button type="button" class="cancel-btn" (click)="onCancel()">
             Cancel
           </button>
-          <button
-            mat-raised-button
-            color="primary"
-            type="submit"
-            class="submit-btn"
-            [disabled]="postRideForm.invalid"
-          >
+          <button mat-raised-button color="primary" type="submit" class="submit-btn">
             <mat-icon>directions_car</mat-icon>
             Post Ride →
           </button>
