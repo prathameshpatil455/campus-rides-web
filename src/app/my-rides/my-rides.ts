@@ -56,7 +56,9 @@ interface Ride {
 export class MyRides {
   isDriverMode = true;
   selectedTab: RideStatus = 'active';
-  myRidesQuery = useGetMyRides(() => ({ status: this.selectedTab }));
+  activeRidesQuery = useGetMyRides(() => ({ status: 'active' }));
+  completedRidesQuery = useGetMyRides(() => ({ status: 'completed' }));
+  cancelledRidesQuery = useGetMyRides(() => ({ status: 'cancelled' }));
   deleteRideMutation = useDeleteRide();
   completeRideMutation = useCompleteRide();
 
@@ -123,14 +125,19 @@ export class MyRides {
   }
 
   get activeRides(): Ride[] {
-    if (this.selectedTab !== 'active') return [];
-    const data = this.myRidesQuery.data() as BackendRide[] | undefined;
+    const data = this.activeRidesQuery.data() as BackendRide[] | undefined;
     if (!data) return [];
     return data.map((r) => this.mapBackendRideToRide(r));
   }
 
-  get ridesByStatus(): Ride[] {
-    const data = this.myRidesQuery.data() as BackendRide[] | undefined;
+  get completedRides(): Ride[] {
+    const data = this.completedRidesQuery.data() as BackendRide[] | undefined;
+    if (!data) return [];
+    return data.map((r) => this.mapBackendRideToRide(r));
+  }
+
+  get cancelledRides(): Ride[] {
+    const data = this.cancelledRidesQuery.data() as BackendRide[] | undefined;
     if (!data) return [];
     return data.map((r) => this.mapBackendRideToRide(r));
   }

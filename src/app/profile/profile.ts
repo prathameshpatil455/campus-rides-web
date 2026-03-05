@@ -41,6 +41,7 @@ interface NotificationPreference {
   selector: 'app-profile',
   standalone: true,
   imports: [
+    SidebarComponent,
     CommonModule,
     RouterModule,
     FormsModule,
@@ -52,7 +53,6 @@ interface NotificationPreference {
     MatProgressBarModule,
     MatDialogModule,
     MatSnackBarModule,
-    SidebarComponent,
   ],
   templateUrl: './profile.html',
   styleUrl: './profile.css',

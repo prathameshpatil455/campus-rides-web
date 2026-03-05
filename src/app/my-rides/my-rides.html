@@ -27,9 +27,9 @@
             }
           </ng-template>
 
-          @if (ridesByStatus.length > 0) {
+          @if (activeRides.length > 0) {
           <div class="rides-list">
-            @for (ride of ridesByStatus; track ride.id) {
+            @for (ride of activeRides; track ride.id) {
             <div class="ride-card">
               <div class="ride-main-content">
                 <div class="ride-date-time">
@@ -123,9 +123,9 @@
             <span class="tab-label">Completed</span>
           </ng-template>
 
-          @if (ridesByStatus.length > 0) {
+          @if (completedRides.length > 0) {
           <div class="rides-list">
-            @for (ride of ridesByStatus; track ride.id) {
+            @for (ride of completedRides; track ride.id) {
             <div class="ride-card">
               <div class="ride-main-content">
                 <div class="ride-date-time">
@@ -179,9 +179,9 @@
             <span class="tab-label">Cancelled</span>
           </ng-template>
 
-          @if (ridesByStatus.length > 0) {
+          @if (cancelledRides.length > 0) {
           <div class="rides-list">
-            @for (ride of ridesByStatus; track ride.id) {
+            @for (ride of cancelledRides; track ride.id) {
             <div class="ride-card">
               <div class="ride-main-content">
                 <div class="ride-date-time">

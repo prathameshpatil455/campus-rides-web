@@ -107,127 +107,7 @@ export class Messages implements OnDestroy, AfterViewChecked {
   private localMessages = signal<Record<string, ChatMessage[]>>({});
   private conversationsList = signal<Conversation[]>([]);
 
-  private dummyConversations: Conversation[] = [
-    {
-      id: '1',
-      userId: 'sarah-chen',
-      userName: 'Sarah Chen',
-      userInitials: 'SC',
-      lastMessage: "I'll be at the main gate in 5 minutes",
-      route: 'Main Gate → Engineering Block',
-      timestamp: 'Yesterday',
-      unreadCount: 2,
-      isOnline: true,
-    },
-    {
-      id: '2',
-      userId: 'emily-davis',
-      userName: 'Emily Davis',
-      userInitials: 'ED',
-      lastMessage: 'Thanks for the ride!',
-      route: 'Hostel A → Computer Science Block',
-      timestamp: '2:10 PM',
-      unreadCount: 0,
-      isOnline: false,
-    },
-    {
-      id: '3',
-      userId: 'james-wilson',
-      userName: 'James Wilson',
-      userInitials: 'JW',
-      lastMessage: 'The ride was smooth, thanks!',
-      route: 'Main Gate → Medical Center',
-      timestamp: '5:30 PM',
-      unreadCount: 1,
-      isOnline: true,
-    },
-  ];
-
-  private dummyMessages: Record<string, ChatMessage[]> = {
-    'sarah-chen': [
-      {
-        id: '1',
-        senderId: 'sarah-chen',
-        senderName: 'Sarah Chen',
-        content: 'Hi! I booked a seat on your ride tomorrow.',
-        timestamp: '10:30 AM',
-        isOwn: false,
-      },
-      {
-        id: '2',
-        senderId: 'current-user',
-        senderName: 'You',
-        content: 'Great! See you at the main gate at 8:30 AM',
-        timestamp: '10:32 AM',
-        isOwn: true,
-      },
-      {
-        id: '3',
-        senderId: 'sarah-chen',
-        senderName: 'Sarah Chen',
-        content: 'Perfect! Should I look for a silver Toyota?',
-        timestamp: '10:35 AM',
-        isOwn: false,
-      },
-      {
-        id: '4',
-        senderId: 'current-user',
-        senderName: 'You',
-        content: "Yes, Toyota Corolla. I'll flash my lights when I see you.",
-        timestamp: '10:36 AM',
-        isOwn: true,
-      },
-      {
-        id: '5',
-        senderId: 'sarah-chen',
-        senderName: 'Sarah Chen',
-        content: "I'll be at the main gate in 5 minutes",
-        timestamp: 'Yesterday',
-        isOwn: false,
-      },
-    ],
-    'emily-davis': [
-      {
-        id: '1',
-        senderId: 'emily-davis',
-        senderName: 'Emily Davis',
-        content: 'Thanks for the ride today!',
-        timestamp: '2:05 PM',
-        isOwn: false,
-      },
-      {
-        id: '2',
-        senderId: 'current-user',
-        senderName: 'You',
-        content: "You're welcome! Happy to help.",
-        timestamp: '2:10 PM',
-        isOwn: true,
-      },
-    ],
-    'james-wilson': [
-      {
-        id: '1',
-        senderId: 'current-user',
-        senderName: 'You',
-        content: 'How was the ride?',
-        timestamp: '5:25 PM',
-        isOwn: true,
-      },
-      {
-        id: '2',
-        senderId: 'james-wilson',
-        senderName: 'James Wilson',
-        content: 'The ride was smooth, thanks!',
-        timestamp: '5:30 PM',
-        isOwn: false,
-      },
-    ],
-  };
-
   constructor() {
-    this.localMessages.set({ ...this.dummyMessages });
-    this.conversationsList.set([...this.dummyConversations]);
-
     // Connect WebSocket on component initialization
     this.wsService.connect();
 
@@ -236,10 +116,9 @@ export class Messages implements OnDestroy, AfterViewChecked {
       this.handleWebSocketMessage(message);
     });
 
-    // Update conversations list when query data changes
     effect(() => {
       const data = this.conversationsQuery.data();
-      if (data && data.length > 0) {
+      if (data) {
         const mapped = data.map((conv) => ({
           id: conv.id,
           userId: conv.userId,
@@ -284,10 +163,7 @@ export class Messages implements OnDestroy, AfterViewChecked {
     }
   }
 
-  conversations = computed(() => {
-    const list = this.conversationsList();
-    return list.length > 0 ? list : this.dummyConversations;
-  });
+  conversations = computed(() => this.conversationsList());
 
   activeChat = computed<ActiveChat | null>(() => {
     const conversationId = this.selectedConversationId();
@@ -344,8 +220,6 @@ export class Messages implements OnDestroy, AfterViewChecked {
       });
     } else if (localMsgs[conversationId]) {
       messages = localMsgs[conversationId];
-    } else if (this.dummyMessages[conversation.userId]) {
-      messages = this.dummyMessages[conversation.userId];
     }
 
     return {

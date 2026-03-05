@@ -61,7 +61,15 @@ export class AllRides {
   get rides(): DisplayRide[] {
     const data = this.paginated;
     if (!data?.rides) return [];
-    return data.rides.map((r) => this.mapRide(r));
+    const currentUserId = this.authService.getUserId();
+    const list = data.rides
+      .filter((r) => {
+        if (!currentUserId) return true;
+        const driverId = typeof r.driverId === 'object' ? r.driverId?._id : r.driverId;
+        return driverId !== currentUserId;
+      })
+      .map((r) => this.mapRide(r));
+    return list;
   }
 
   get total(): number {
