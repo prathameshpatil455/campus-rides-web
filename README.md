@@ -1,79 +1,54 @@
-# 🚗 CampusRide - Student Ride Sharing Platform
+# Campus Rides — student ride sharing
 
-A student-exclusive ride-sharing web application built with Angular.
+Frontend: **Vite + React** (`apps/web`). See [`plan.md`](./plan.md) for migration history.
 
-## 📋 Prerequisites
+## Prerequisites
 
-- **Node.js** (version 18.x or higher) - [Download here](https://nodejs.org/)
-- **npm** (comes with Node.js)
+- **Node.js** ≥ 20.19 ([`.nvmrc`](./.nvmrc))
+- **pnpm** — pinned as **`pnpm@9.15.0`** in root `package.json` (`packageManager` field)
 
-## 🚀 Quick Start
+### `pnpm: command not found`
 
-### Step 1: Install Angular CLI
+| Method | Command |
+|--------|---------|
+| **Homebrew (macOS)** | `brew install pnpm` |
+| **Corepack** | `sudo corepack enable && corepack prepare pnpm@9.15.0 --activate` |
+| **Standalone** | [pnpm.io/installation](https://pnpm.io/installation) |
+| **One-off** | `npx pnpm@9.15.0 install` / `npx pnpm@9.15.0 run dev` |
 
-```bash
-npm install -g @angular/cli
-```
+## Install
 
-### Step 2: Install Dependencies
-
-```bash
-npm install
-```
-
-### Step 3: Run the Project
+From the repository root:
 
 ```bash
-npm start
+pnpm install
 ```
 
-The application will open at **http://localhost:4200**
+## Scripts
 
-## 📝 Available Commands
+All commands run from the **repository root** and target `apps/web`:
 
-```bash
-# Start development server
-npm start
+| Command | Description |
+|---------|-------------|
+| `pnpm dev` | Vite dev server (default **5173**) |
+| `pnpm build` | Production build → `apps/web/dist` |
+| `pnpm preview` | Preview production build |
+| `pnpm typecheck` | TypeScript check for `apps/web` |
+| `pnpm lint` | ESLint for `apps/web` |
 
-# Build for production
-npm run build
+## Configuration
 
-# Run tests
-npm test
+Copy `apps/web/.env.example` to `apps/web/.env` and set **`VITE_API_BASE_URL`** (e.g. `http://localhost:3000/api`).
+
+## Layout
+
+```
+apps/web/     # Vite + React + TypeScript + Tailwind + TanStack Router/Query
+docs/         # e.g. manual test checklist
 ```
 
-## 📁 Project Structure
+## Docs
 
-```
-src/
-├── app/
-│   ├── landing/          # Landing page
-│   ├── app.ts           # Root component
-│   └── app.routes.ts    # Routes
-├── styles.css           # Global styles
-└── index.html          # Main HTML
-```
-
-## 🔧 Troubleshooting
-
-**Port already in use?**
-
-```bash
-ng serve --port 4201
-```
-
-**Module not found?**
-
-```bash
-rm -rf node_modules package-lock.json
-npm install
-```
-
-**Need to restart server?**
-
-- Only restart when installing new packages or changing config files
-- Regular code changes auto-reload (no restart needed)
-
----
-
-For detailed information, see [Roadmap.md](./Roadmap.md) and [FEATURES.md](./FEATURES.md)
+- [`plan.md`](./plan.md) — phases and progress log
+- [`docs/MANUAL_TEST_CHECKLIST.md`](./docs/MANUAL_TEST_CHECKLIST.md) — release / regression checks
+- [`docs/PROJECT_SCORE_AND_FEATURE_BACKLOG.md`](./docs/PROJECT_SCORE_AND_FEATURE_BACKLOG.md) — project scorecard and suggested feature backlog
